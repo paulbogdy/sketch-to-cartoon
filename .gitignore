@@ -1,0 +1,10 @@
+client/.idea/
+experiments/.idea/
+*.pyc
+client/cmake-build-debug/
+client/SketchyGenerator.pt
+experiments/training/trainers/runs
+experiments/training/trainers/checkpoints/
+experiments/runs
+dataset/
+!experiments/dataset/
