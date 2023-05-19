@@ -12,6 +12,11 @@ MainController::MainController(CanvasModel *canvasModel, GeneratedImagesModel *g
 }
 
 void MainController::generateImages() {
-    auto images = Settings::getInstance().getGenerativeStrategy()->generateFromSketch(_canvasModel->image());
+    auto images = Settings::getInstance().getGenerativeStrategy()->generateFromSketch(_canvasModel->image(), 0);
     _generatedImagesModel->setImages(images);
+}
+
+void MainController::generateShadow() {
+    auto shadow = Settings::getInstance().getGenerativeStrategy()->generateShadow(_canvasModel->image(), 0);
+    _canvasModel->setShadow(shadow);
 }

@@ -1,4 +1,4 @@
-from dataset.dataset import MyDataset
+from dataset.dataset import Donarobu128Dataset
 from torchvision.transforms import ToTensor
 from training.SketchyGanTrainer import SketchyGanTrainer
 import torch
@@ -6,7 +6,7 @@ import random
 from torch.utils.data import Subset
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-dataset = MyDataset(root_dir="../dataset/archive/danbooru-sketch-pair-128x/", transform=ToTensor())
+dataset = Donarobu128Dataset(root_dir="../dataset/archive/danbooru-sketch-pair-128x/", transform=ToTensor())
 subset_size = int(len(dataset) * 0.01)
 
 # Create a list of random unique indices

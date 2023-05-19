@@ -8,9 +8,11 @@
 #include "GenerativeStrategy.h"
 
 class DefaultStrategy: public GenerativeStrategy {
+    Q_OBJECT
 public:
-    QVector<QImage> generateFromSketch(QImage sketch) override;
-    ~DefaultStrategy() override;
+    explicit DefaultStrategy(QObject* parent = nullptr);
+    QVector<QImage> generateFromSketch(QImage sketch, int numSamples) override;
+    QImage generateShadow(QImage sketch, int numSamples) override;
 };
 
 

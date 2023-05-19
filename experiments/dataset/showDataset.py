@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 from IPython.display import display, clear_output
 import ipywidgets as widgets
 import matplotlib
-from dataset.dataset import MyDataset
 
 from matplotlib.widgets import Button
+
+from dataset import CartoonImageDataset
+
 matplotlib.use('TkAgg')
 
 
-dataset = MyDataset(root_dir="../dataset/archive/danbooru-sketch-pair-128x/", transform=ToTensor())
+dataset = CartoonImageDataset(root_dir="../../../../naver-webtoon-data/faces/", transform=ToTensor())
 print(len(dataset))
 
 class Index:
@@ -29,11 +31,9 @@ class Index:
         self.show_image_pair()
 
     def show_image_pair(self):
-        sketch_image, src_image = dataset[self.ind]
-        sketch_image = sketch_image.permute(1, 2, 0)
+        src_image, _ = dataset[self.ind]
         src_image = src_image.permute(1, 2, 0)
 
-        sketch_ax.imshow(sketch_image, cmap='gray')
         src_ax.imshow(src_image)
         fig.canvas.draw()
 

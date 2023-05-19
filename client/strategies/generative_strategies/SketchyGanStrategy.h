@@ -15,10 +15,10 @@
 #include "GenerativeStrategy.h"
 
 class SketchyGanStrategy: public GenerativeStrategy {
+    Q_OBJECT
 public:
-    SketchyGanStrategy();
-    QVector<QImage> generateFromSketch(QImage sketch) override;
-    ~SketchyGanStrategy() override;
+    explicit SketchyGanStrategy(QObject* parent = nullptr);
+    QVector<QImage> generateFromSketch(QImage sketch, int numSamples) override;
 private:
     torch::jit::script::Module _generator;
     torch::Device _device;

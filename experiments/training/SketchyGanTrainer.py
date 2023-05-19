@@ -13,7 +13,7 @@ from torch.autograd.variable import Variable
 
 
 class SketchyGanTrainer(Trainer):
-    def __init__(self, device, dataset, model_name, gamma_div=1, gamma_p=1):
+    def __init__(self, device, dataset, model_name, sketcher, gamma_div=1, gamma_p=1):
         super().__init__(device, dataset, model_name)
         self.noise_channels = 1
         self.generator = SketchyGenerator(input_channels=self.noise_channels)
@@ -33,11 +33,22 @@ class SketchyGanTrainer(Trainer):
         self.writer_loss = SummaryWriter(f"runs/SketchyGAN/loss")
         self.step = 0
         self.loss_step = 0
+        self.sketcher = sketcher
+        self.sketcher.to(device)
 
-    def train_step(self, batch_idx, data):
-        valid_indices = torch.nonzero(data[2]).squeeze()
-        sketch_data = F.interpolate(data[0], size=(64, 64), mode='bilinear', align_corners=True).to(self.device)[valid_indices]
-        real_data = F.interpolate(data[1], size=(64, 64), mode='bilinear', align_corners=True).to(self.device)[valid_indices]
+    def train_step(self, batch_idx, data, batch_size):
+        valid_indices = torch.nonzero(data[1]).squeeze()
+        real_data = F.interpolate(data[0], size=(256, 256), mode='bilinear', align_corners=True).to(self.device)[
+            valid_indices]
+
+        sketch_data_list = []
+        with torch.no_grad():
+            for idx in range(real_data.size(0)):
+                single_image = real_data[idx].unsqueeze(0)
+                sketch = self.sketcher(single_image)
+                sketch_data_list.append(sketch)
+
+        sketch_data = torch.cat(sketch_data_list, dim=0)
 
         # Train the discriminator with real data
         self.d_optimizer.zero_grad()

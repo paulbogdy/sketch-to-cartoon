@@ -5,16 +5,6 @@
 #include "GeneratedImagesModel.h"
 
 GeneratedImagesModel::GeneratedImagesModel(QObject *parent) : QObject(parent) {
-    int width = 512;
-    int height = 512;
-
-    QImage whiteImage(width, height, QImage::Format_RGB32);
-    whiteImage.fill(QColor(Qt::white));
-
-
-    for(int i=0; i<18; i++) {
-        _images.push_back(whiteImage);
-    }
 }
 
 int GeneratedImagesModel::imageCount() const {
@@ -30,7 +20,7 @@ QImage GeneratedImagesModel::imageAt(int index) const {
 
 void GeneratedImagesModel::addImage(const QImage &image) {
     _images.append(image);
-    emit imageCount();
+    emit imagesChanged();
 }
 
 void GeneratedImagesModel::removeImage(int index) {
@@ -42,5 +32,5 @@ void GeneratedImagesModel::removeImage(int index) {
 
 void GeneratedImagesModel::setImages(const QVector<QImage> &images) {
     _images = QVector<QImage>(images.begin(), images.end());
-    emit imageCount();
+    emit imagesChanged();
 }

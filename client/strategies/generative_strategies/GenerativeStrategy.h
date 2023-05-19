@@ -8,10 +8,12 @@
 
 #include <QImage>
 
-class GenerativeStrategy {
+class GenerativeStrategy: public QObject {
+    Q_OBJECT
 public:
-    virtual QVector<QImage> generateFromSketch(QImage sketch) = 0;
-    virtual ~GenerativeStrategy() = default;
+    explicit GenerativeStrategy(QObject* parent = nullptr);
+    virtual QVector<QImage> generateFromSketch(QImage sketch, int numSamples) = 0;
+    virtual QImage generateShadow(QImage sketch, int numSamples) = 0;
 };
 
 

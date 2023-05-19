@@ -10,6 +10,9 @@
 
 class GeneratedImagesModel: public QObject {
     Q_OBJECT
+
+    void setShadow(QImage image);
+
 public:
     explicit GeneratedImagesModel(QObject* parent = nullptr);
 

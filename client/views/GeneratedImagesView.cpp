@@ -4,35 +4,76 @@
 
 #include "GeneratedImagesView.h"
 #include <QPainter>
+#include <QDebug>
 #include <QMouseEvent>
 
-GeneratedImagesView::GeneratedImagesView(GeneratedImagesModel *generatedImagesModel, QWidget *parent)
-    : QWidget(parent)
-    , _generatedImagesModel(generatedImagesModel)
-    , _offset(0)
-    , _imageWidth(128)
-    , _imageHeight(128)
-    , _spacing(10)
-    {
-    connect(_generatedImagesModel, &GeneratedImagesModel::imagesChanged, this, &GeneratedImagesView::updateImages);
+ImageWidget::ImageWidget(GeneratedImagesModel *generatedImagesModel, QWidget *parent): QWidget(parent)
+        , _generatedImagesModel(generatedImagesModel)
+        , _imageWidth(128)
+        , _imageHeight(128)
+        , _spacing(10)
+        , _padding(5){
+    setMinimumWidth(_imageWidth + 15 + 2 * _padding);
 }
 
-QSize GeneratedImagesView::sizeHint() const {
-    return QSize(_imageWidth * 5 + _spacing * 4, _imageHeight);
-}
-
-void GeneratedImagesView::updateImages() {
-
-}
-
-void GeneratedImagesView::paintEvent(QPaintEvent *event) {
+void ImageWidget::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    int x = _spacing - _offset;
+    int y = _spacing;
     for (int i = 0; i < _generatedImagesModel->imageCount(); ++i) {
         QImage img = _generatedImagesModel->imageAt(i).scaled(_imageWidth, _imageHeight, Qt::KeepAspectRatio);
-        painter.drawImage(x, (height() - img.height()) / 2, img);
-        x += _imageWidth + _spacing;
+        painter.drawImage(_padding, y, img);  // Fixed x coordinate
+        y += _imageHeight + _spacing;
     }
 }
 
+void ImageWidget::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);
+    emit sizeChanged();
+}
+
+void ImageWidget::adjustSize() {
+    int newHeight = _generatedImagesModel->imageCount() * (_imageHeight + _spacing);
+    resize(width(), newHeight);
+}
+
+void ImageWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        int y = _spacing;
+        for (int i = 0; i < _generatedImagesModel->imageCount(); ++i) {
+            QRect imageRect(0, y, _imageWidth, _imageHeight);
+            if (imageRect.contains(event->pos())) {
+                emit imageClicked(_generatedImagesModel->imageAt(i));
+                return;
+            }
+            y += _imageHeight + _spacing;
+        }
+    }
+    QWidget::mousePressEvent(event);
+}
+
+GeneratedImagesView::GeneratedImagesView(GeneratedImagesModel *generatedImagesModel, QWidget *parent)
+        : QScrollArea(parent)
+{
+    _imageWidget = new ImageWidget(generatedImagesModel, this);
+    setWidget(_imageWidget);
+
+    connect(generatedImagesModel, &GeneratedImagesModel::imagesChanged, this, &GeneratedImagesView::updateImages);
+    connect(_imageWidget, &ImageWidget::sizeChanged, this, &GeneratedImagesView::updateGeometrySlot);
+
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
+
+void GeneratedImagesView::updateGeometrySlot() {
+    updateGeometry();
+}
+
+void GeneratedImagesView::updateImages() {
+    _imageWidget->adjustSize();
+    _imageWidget->update();
+}
+
+ImageWidget *GeneratedImagesView::imageWidget() const {
+    return _imageWidget;
+}
 

@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <iostream>
 
-QVector<QImage> SketchyGanStrategy::generateFromSketch(QImage sketch) {
+QVector<QImage> SketchyGanStrategy::generateFromSketch(QImage sketch, int numSamples) {
     // Convert the input sketch image to grayscale and resize it to (64, 64)
     QImage gray_image = sketch.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation).convertToFormat(QImage::Format_Grayscale8);
 
@@ -45,12 +45,7 @@ QVector<QImage> SketchyGanStrategy::generateFromSketch(QImage sketch) {
     return generated_qimages;
 }
 
-
-SketchyGanStrategy::~SketchyGanStrategy() {
-
-}
-
-SketchyGanStrategy::SketchyGanStrategy(): _device(torch::kCPU) {
+SketchyGanStrategy::SketchyGanStrategy(QObject *parent) : GenerativeStrategy(parent), _device(torch::kCUDA) {
     try {
         if (!torch::cuda::is_available()) {
             std::cerr << "CUDA is not available. Using CPU instead." << std::endl;

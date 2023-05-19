@@ -21,13 +21,14 @@ class Trainer:
         completed_batches = 0
         time_history = deque(maxlen=10)
 
-        update_frequency = 10  # Update console output every 10 batches
+        update_frequency = 1  # Update console output every 10 batches
 
         for epoch in range(start_epoch, num_epochs):
             try:
+                self.each_epoch()
                 for batch_idx, data in enumerate(dataloader):
                     start_time = time.time()
-                    d_loss, g_loss = self.train_step(batch_idx, data)
+                    train_res = self.train_step(batch_idx, data, batch_size)
                     end_time = time.time()
                     elapsed_time = end_time - start_time
                     time_history.append(elapsed_time)
@@ -43,18 +44,20 @@ class Trainer:
                         mins, secs = divmod(remaining_time, 60)
                         hours, mins = divmod(mins, 60)
 
-                        print('\r', end='')
-                        print(f"Epoch [{epoch + 1}/{num_epochs}] Batch [{batch_idx + 1}/{nr_batches}] "
-                              f"d_loss: {d_loss.item()} g_loss: {g_loss.item()} "
-                              f"Progress: {progress:.2f}% "
-                              f"Remaining time: {int(hours)}:{int(mins)}:{int(secs)}",
-                              end='', flush=True)
+                        self.show_data(train_res, epoch, num_epochs, batch_idx, nr_batches, progress, hours, mins, secs)
             except KeyboardInterrupt:
                 print("\nStopping training. Saving the model...")
                 self.save_checkpoint(epoch)
                 return
 
             self.save_checkpoint(epoch)
+
+    def show_data(self, train_res, epoch, num_epochs, batch_idx, nr_batches, progress, hours, mins, secs):
+        print('\r', end='')
+        print(f"Epoch [{epoch + 1}/{num_epochs}] Batch [{batch_idx + 1}/{nr_batches}] "
+              f"Progress: {progress:.2f}% "
+              f"Remaining time: {int(hours)}:{int(mins)}:{int(secs)}",
+              end='', flush=True)
 
     def continue_training(self, batch_size, num_epochs, checkpoint_path=None):
         if checkpoint_path is None:
@@ -76,11 +79,14 @@ class Trainer:
         latest_checkpoint = max(checkpoint_files, key=os.path.getctime)
         return latest_checkpoint
 
-    def train_step(self, batch_idx, data):
+    def train_step(self, batch_idx, data, batch_size):
         raise NotImplementedError("Implement train step.")
 
     def save_checkpoint(self, epoch):
         pass
 
     def load_checkpoint(self, checkpoint_path):
+        pass
+
+    def each_epoch(self):
         pass

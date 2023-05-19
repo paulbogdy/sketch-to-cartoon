@@ -10,6 +10,7 @@ class MRU(nn.Module):
         self.conv3 = nn.Conv2d(in_channels + 1, in_channels, kernel_size=3, stride=1, padding=1)
 
         self.activation = nn.ReLU(inplace=True)
+        self.sigmoid = nn.Sigmoid()
 
     def resized_sketch(self, x, sketch):
         return nn.functional.interpolate(sketch, size=x.shape[2:], mode='bilinear', align_corners=True)

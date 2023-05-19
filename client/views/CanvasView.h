@@ -18,7 +18,17 @@ Q_OBJECT
 public:
     explicit CanvasView(CanvasModel* canvasModel, QWidget* parent = nullptr);
 
-    void setImage(const QImage& image);
+public slots:
+    void updateImage(const QImage& image);
+    void updateShadow(const QImage& image);
+
+signals:
+    void imageChanged(const QImage& image);
+    void undoRequest();
+    void redoRequest();
+    void beginDraw(const QPoint& point);
+    void draw(const QPoint& point);
+    void endDraw();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -32,6 +42,7 @@ private:
 
     CanvasModel* _canvasModel;
     QImage _image;
+    QImage _shadow;
     QPoint _lastPoint;
     QPen _pen;
 };

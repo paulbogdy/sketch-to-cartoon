@@ -1,4 +1,6 @@
 client/.idea/
+client/resources/
+client/diagrams/
 experiments/.idea/
 *.pyc
 client/cmake-build-debug/
@@ -8,3 +10,13 @@ experiments/training/trainers/checkpoints/
 experiments/runs
 dataset/
 !experiments/dataset/
+experiments/Dataset_IDS.csv
+experiments/roxana.py
+experiments/parliamen_data.csv
+experiments/playground.py
+*.pt
+*.pkl
+*runs/
+*data/
+*checkpoints/
+experiments/servers/build/

@@ -9,7 +9,9 @@
 #include <QVBoxLayout>
 #include "../views/CanvasView.h"
 #include "../views/GeneratedImagesView.h"
-#include "../controllers/MainController.h"
+#include "../controllers/CanvasController.h"
+#include "../controllers/GeneratedImagesController.h"
+#include "../views/FullSizeImageWidget.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -21,17 +23,18 @@ Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+
 public slots:
-    void onButtonClicked();
+    void openSettingsWindow();
 
 private:
     CanvasView* _canvasView;
     CanvasModel* _canvasModel;
+    CanvasController* _canvasController;
     GeneratedImagesView* _generatedImagesView;
     GeneratedImagesModel* _generatedImagesModel;
-    MainController* _controller;
-
-    void openSettingsWindow();
+    GeneratedImagesController* _generatedImagesController;
+    FullSizeImageWidget *_fullSizeImageWidget;
 };
 
 

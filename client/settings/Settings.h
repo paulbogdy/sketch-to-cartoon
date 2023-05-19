@@ -12,12 +12,18 @@
 
 class Settings : public QObject {
 Q_OBJECT
+
 public:
     static Settings& getInstance();
 
     ~Settings() override;
-    void setGenerativeStrategy(GenerativeStrategy* strategy);
+    void setGenerativeStrategy(QString strategyName);
     GenerativeStrategy* getGenerativeStrategy();
+    void setImagesToGenerate(int imagesToGenerate);
+    int getImagesToGenerate() const;
+    void setImagesForShadowDraw(int imagesForShadowDraw);
+    int getImagesForShadowDraw() const;
+    QString getGenerativeStrategyName() const;
 
     // Delete copy constructor and assignment operator
     Settings(const Settings&) = delete;
@@ -25,7 +31,11 @@ public:
 
 private:
     explicit Settings(QObject* parent = nullptr);
+
+    QString _strategyName;
     GenerativeStrategy* _generativeStrategy;
+    int _imagesToGenerate;
+    int _imagesForShadowDraw;
 
     static std::shared_ptr<Settings> _instance;
     static std::mutex _mutex;

@@ -3,3 +3,7 @@
 //
 
 #include "GenerativeStrategy.h"
+
+GenerativeStrategy::GenerativeStrategy(QObject *parent) : QObject(parent) {
+
+}

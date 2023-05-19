@@ -1,4 +1,4 @@
-from dataset.dataset import MyDataset
+from dataset.dataset import Donarobu128Dataset
 from torchvision.transforms import ToTensor
 from training.SketchyGanTrainer import SketchyGanTrainer
 import torch
@@ -9,7 +9,7 @@ batch_size = 16
 num_epochs = 10
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-dataset = MyDataset(root_dir="../../../dataset/archive/danbooru-sketch-pair-128x/", transform=ToTensor())
+dataset = Donarobu128Dataset(root_dir="../../../dataset/archive/danbooru-sketch-pair-128x/", transform=ToTensor())
 
 
 subset_size = int(len(dataset) * 0.05)
