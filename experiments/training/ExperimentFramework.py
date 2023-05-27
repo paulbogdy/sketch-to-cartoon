@@ -177,6 +177,8 @@ class Experiment:
                    batch_size,
                    accumulation_steps):
         self.encoder_optim.zero_grad()
+        if self.sketcher is not None:
+            self.sketcher_optim.zero_grad()
         sketch, src, point = data
         fake = []
 
@@ -223,13 +225,6 @@ class Experiment:
                 encoder_loss.add_(content_loss * self.content_loss_alpha)
                 content_loss_agg += content_loss.item()
 
-            fake_src = torch.zeros_like(mini_batch_src, device=self.device)
-            for i in range(mini_batch_size):
-                z_i = fake_z[i].unsqueeze(0)
-                fake_src[i] = self._generate_image(z_i)
-                if tensorboard_step % 10 == 0:
-                    fake.append(fake_src[i].unsqueeze(0).cpu().detach())
-
             if self.shape_loss_alpha == 0:
                 encoder_loss.backward()
                 encoder_loss_agg += encoder_loss.item()
@@ -260,6 +255,8 @@ class Experiment:
             encoder_loss_agg += encoder_loss.item()
 
         self.encoder_optim.step()
+        if self.sketcher is not None:
+            self.sketcher_optim.step()
         encoder_loss_agg /= accumulation_steps
         z_loss_agg /= accumulation_steps
         content_loss_agg /= accumulation_steps

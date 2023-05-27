@@ -1,0 +1,1 @@
+{"experiment_name": "Model_Full", "dataset_choice": "CARTOON", "z_loss_alpha": 1, "content_loss_alpha": 1, "shape_loss_alpha": 1, "use_conceptual_loss": true, "encoder_optimizer": "ADAM", "encoder_hyper_params": {"lr": 0.001}, "sketcher_exists": true, "sketcher_optimizer": "ADAM", "sketcher_hyper_params": {"lr": 0.001}, "experiment_description": "", "experiment_seed": 42}
