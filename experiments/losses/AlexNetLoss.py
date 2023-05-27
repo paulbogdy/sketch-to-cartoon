@@ -14,15 +14,14 @@ class AlexNetLoss(nn.Module):
         self.loss_weight = loss_weight
 
     def forward(self, input1, input2):
-        with torch.no_grad():
-            if input1.size(1) == 1:  # Grayscale image
-                input1 = input1.repeat(1, 3, 1, 1)  # Repeat channel 3 times
+        if input1.size(1) == 1:  # Grayscale image
+            input1 = input1.repeat(1, 3, 1, 1)  # Repeat channel 3 times
 
-            if input2.size(1) == 1:  # Grayscale image
-                input2 = input2.repeat(1, 3, 1, 1)  # Repeat channel 3 times
+        if input2.size(1) == 1:  # Grayscale image
+            input2 = input2.repeat(1, 3, 1, 1)  # Repeat channel 3 times
 
-            output1, intermediate_outputs1 = self.modified_model(input1)
-            output2, intermediate_outputs2 = self.modified_model(input2)
+        output1, intermediate_outputs1 = self.modified_model(input1)
+        output2, intermediate_outputs2 = self.modified_model(input2)
 
         loss = 0
         for output1, output2 in zip(intermediate_outputs1, intermediate_outputs2):

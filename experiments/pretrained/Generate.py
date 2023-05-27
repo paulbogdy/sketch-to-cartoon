@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 from models.StyleGan2 import Generator
+from pretrained.PretrainedGenerator import CartoonGenerator, CartoonGeneratorStyleLatent
 
 # g_ema = Generator(
 #         256, 512, 8, channel_multiplier=2
@@ -18,21 +19,10 @@ from models.StyleGan2 import Generator
 #
 # g_ema.load_state_dict(checkpoint['g_ema'])
 
+from pathlib import Path
+root_path = Path(__file__).parent.parent
 
-class Generator2(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.z_dim = 512
-        self.g_ema = Generator(
-            256, 512, 8, channel_multiplier=2
-        ).cuda()
-        checkpoint = torch.load('NaverWebtoon-040000.pt')
-        self.g_ema.load_state_dict(checkpoint['g_ema'])
-
-    def forward(self, x, y):
-        return self.g_ema([x], 0, None)
-
-G = Generator2()
+G = CartoonGenerator(root_path)
 
 # with open('ffhq.pkl', 'rb') as f:
 #     G = pickle.load(f)['G_ema'].cuda()  # torch.nn.Module
@@ -156,12 +146,59 @@ def estimate(tenInput):
     return netNetwork(tenInput)
 # end
 
+def binarize_image(img_tensor, threshold=0.5):
+    img_tensor = torch.where(img_tensor > threshold, torch.tensor(1.0).cuda(), torch.tensor(0.0).cuda())
+    return img_tensor
+
 
 def display_image(img, color_space='RGB'):
-    # img = estimate(img)
-    img.clamp_(-1, 1)
-    img_np = img.squeeze(0).detach().cpu().numpy().transpose(1, 2, 0)
+    original_img = img.clone()
+    sketch_img = estimate(img)
+    sketch_img.clamp_(-1, 1)
 
+    # Binarize the sketch
+    binarized_sketch = binarize_image(sketch_img)
+
+    # Convert tensors to numpy arrays for displaying
+    original_img_np = original_img.squeeze(0).detach().cpu().numpy().transpose(1, 2, 0)
+    sketch_img_np = sketch_img.squeeze(0).detach().cpu().numpy().transpose(1, 2, 0)
+    binarized_sketch_np = binarized_sketch.squeeze(0).detach().cpu().numpy().transpose(1, 2, 0)
+
+    # Scale images to [0, 255] if necessary
+    original_img_np = scale_image(original_img_np)
+    sketch_img_np = scale_image(sketch_img_np)
+    binarized_sketch_np = scale_image(binarized_sketch_np)
+
+    # Convert color space if necessary
+    if color_space == 'BGR':
+        original_img_np = cv2.cvtColor(original_img_np, cv2.COLOR_BGR2RGB)
+        sketch_img_np = cv2.cvtColor(sketch_img_np, cv2.COLOR_BGR2RGB)
+        binarized_sketch_np = cv2.cvtColor(binarized_sketch_np, cv2.COLOR_BGR2RGB)
+
+    # Display images
+    plt.figure(figsize=(15, 5))
+
+    plt.subplot(1, 3, 1)
+    plt.imshow(original_img_np, cmap='gray')
+    plt.title('Original Image')
+    plt.axis("off")
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(sketch_img_np, cmap='gray')
+    plt.title('Sketch')
+    plt.axis("off")
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(binarized_sketch_np, cmap='gray')
+    plt.title('Binarized Sketch')
+    plt.axis("off")
+
+    plt.draw()
+    plt.pause(1)  # Pause for 1 second
+    plt.cla()
+
+
+def scale_image(img_np):
     # Check value range and scale to [0, 255] if necessary
     min_val = np.min(img_np)
     max_val = np.max(img_np)
@@ -169,29 +206,18 @@ def display_image(img, color_space='RGB'):
         img_np = ((img_np + 1) * 127.5).astype(np.uint8)
     elif min_val >= 0.0 and max_val <= 1.0:
         img_np = (img_np * 255).astype(np.uint8)
-
-    # Convert color space if necessary
-    if color_space == 'BGR':
-        img_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
-
-    plt.imshow(img_np, cmap='gray')
-    plt.axis("off")
-    plt.draw()
-    plt.pause(0.01)  # Pause for 1 second
-    plt.clf()
-
+    return img_np
 
 
 try:
-    while True:
-        img, _ = G(z, None)
-        display_image(img)
+    img = G(z)
+    display_image(img)
 
-        noise = torch.randn_like(z) * epsilon
-        z = z + noise
-        z = torch.clamp(z, min=-1, max=1)
+    noise = torch.randn_like(z) * epsilon
+    z = z + noise
+    z = torch.clamp(z, min=-1, max=1)
 
 except KeyboardInterrupt:
     print("Image generation stopped.")
-    plt.close()                # NCHW, float32, dynamic range [-1, +1]
+    plt.close()                # NCHW, f, Noneloat32, dynamic range [-1, +1]
 

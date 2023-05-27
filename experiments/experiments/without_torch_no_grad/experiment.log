@@ -1,0 +1,88 @@
+2023-05-25 19:55:10,002 - training.ExperimentFramework - INFO - No config file found. Saving current config.
+2023-05-25 19:55:10,092 - training.ExperimentFramework - INFO - No checkpoint found.
+2023-05-25 19:55:13,273 - training.ExperimentFramework - INFO - Trying to save checkpoint...
+2023-05-25 19:55:13,295 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-25 19:55:52,368 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-25 19:55:52,455 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_0.pt. Loading checkpoint.
+2023-05-26 00:19:49,098 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-26 00:19:49,132 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 16:23:57,626 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:23:57,769 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:25:02,481 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:25:02,580 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:25:39,858 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:25:39,859 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 16:25:39,957 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:26:55,832 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:26:55,832 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 16:26:55,931 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:26:55,943 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 16:28:18,690 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:28:18,691 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 16:28:18,781 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:28:18,792 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 16:28:18,793 - training.ExperimentFramework - INFO - Num epochs: 27
+2023-05-26 16:30:16,589 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 16:30:16,589 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 16:30:16,685 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 16:30:16,698 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 16:30:16,698 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 19:36:08,986 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 19:36:08,987 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 19:36:09,159 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 19:36:09,289 - training.ExperimentFramework - INFO - Loaded checkpoint /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt at epoch 0 and batch 26304
+2023-05-26 19:36:09,289 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 19:36:09,289 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 19:36:16,331 - training.ExperimentFramework - INFO - Trying to save checkpoint...
+2023-05-26 19:36:16,357 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 19:38:18,159 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 19:38:18,160 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 19:38:18,321 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 19:38:18,335 - training.ExperimentFramework - INFO - Loaded checkpoint /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt at epoch 0 and batch 26304
+2023-05-26 19:38:18,335 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 19:38:18,335 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 19:38:25,667 - training.ExperimentFramework - INFO - Trying to save checkpoint...
+2023-05-26 19:38:25,695 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 19:41:20,044 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 19:41:20,045 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 19:41:20,153 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 19:41:20,169 - training.ExperimentFramework - INFO - Loaded checkpoint /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt at epoch 0 and batch 26304
+2023-05-26 19:41:20,169 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 19:41:20,169 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 19:42:12,043 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 19:42:12,044 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 19:42:12,152 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 19:42:12,163 - training.ExperimentFramework - INFO - Loaded checkpoint /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt at epoch 0 and batch 26304
+2023-05-26 19:42:12,163 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 19:42:12,163 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 19:42:17,735 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-26 19:42:17,757 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 19:44:28,142 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 19:44:28,143 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 19:44:28,252 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt. Loading checkpoint.
+2023-05-26 19:44:28,264 - training.ExperimentFramework - INFO - Loaded checkpoint /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_822.pt at epoch 0 and batch 26304
+2023-05-26 19:44:28,264 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 19:44:28,264 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 20:17:22,577 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-26 20:17:22,600 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 20:22:02,276 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 20:22:02,298 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 20:22:02,408 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_892.pt. Loading checkpoint.
+2023-05-26 20:22:02,420 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 20:22:02,420 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 20:31:31,775 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-26 20:31:31,798 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 20:31:56,359 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 20:31:56,375 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 20:31:56,505 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_0_batch_906.pt. Loading checkpoint.
+2023-05-26 20:31:56,519 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 20:31:56,519 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-26 20:49:29,015 - training.ExperimentFramework - INFO - Trying to save checkpoint...
+2023-05-26 20:49:29,036 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-26 20:52:12,856 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-26 20:52:12,883 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-26 20:52:12,994 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/without_torch_no_grad/checkpoints/epoch_1_batch_0.pt. Loading checkpoint.
+2023-05-26 20:52:13,005 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-26 20:52:13,005 - training.ExperimentFramework - INFO - Num epochs: 1
+2023-05-26 21:27:05,593 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-26 21:27:05,628 - training.ExperimentFramework - INFO - Checkpoint saved!

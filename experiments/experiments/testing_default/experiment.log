@@ -1,0 +1,4 @@
+2023-05-25 15:14:39,963 - training.ExperimentFramework - INFO - No config file found. Saving current config.
+2023-05-25 15:14:40,056 - training.ExperimentFramework - INFO - No checkpoint found.
+2023-05-25 18:18:47,340 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-25 18:18:48,324 - training.ExperimentFramework - INFO - Checkpoint saved!

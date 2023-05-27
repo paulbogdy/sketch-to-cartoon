@@ -1,0 +1,11 @@
+2023-05-27 17:47:13,646 - training.ExperimentFramework - INFO - No config file found. Saving current config.
+2023-05-27 17:47:13,655 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-27 17:47:13,742 - training.ExperimentFramework - INFO - No checkpoint found.
+2023-05-27 17:47:13,742 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-27 17:48:03,325 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-27 17:48:03,325 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-27 17:48:03,410 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Only_ZLoss_2.0/checkpoints/epoch_0_batch_10.pt. Loading checkpoint.
+2023-05-27 17:48:03,421 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-27 17:48:03,421 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-27 18:11:38,062 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-27 18:11:38,093 - training.ExperimentFramework - INFO - Checkpoint saved!

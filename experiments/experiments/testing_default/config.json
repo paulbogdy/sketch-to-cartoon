@@ -1,0 +1,1 @@
+{"experiment_name": "testing_default", "dataset_choice": "CARTOON", "z_loss_alpha": 1, "content_loss_alpha": 1, "shape_loss_alpha": 1, "use_conceptual_loss": false, "encoder_optimizer": "ADAM", "encoder_hyper_params": {"lr": 0.0001}, "sketcher_exists": false, "sketcher_optimizer": null, "sketcher_hyper_params": null, "experiment_description": "", "experiment_seed": 42}

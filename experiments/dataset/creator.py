@@ -28,15 +28,13 @@ def generate_from_gan(generator, sketcher, dst_path, device, num_images=1000, ba
                 torch.save(z[j], os.path.join(z_points_path, f"{i * batch_size + j}.pt"))
                 torchvision.utils.save_image(fake_images[j], os.path.join(src_images_path, f"{i * batch_size + j}.png"))
             del z
-            fake_images = normalize(fake_images)
+            fake_images = sketcher(fake_images)
             for j in range(batch_size):
                 torchvision.utils.save_image(fake_images[j], os.path.join(sketch_images_path, f"{i * batch_size + j}.png"))
             del fake_images
         print('\r', end='')
         print(f"{i+1}/{num_images // batch_size}", end='', flush=True)
 
-
-from models.StyleGan2 import Generator
 
 from models.StyleGan2 import Generator
 

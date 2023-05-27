@@ -1,3 +1,5 @@
+import math
+
 import torch
 import torch.nn as nn
 from torch.nn.utils import spectral_norm
@@ -54,25 +56,39 @@ class ResBlockUp(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, z_dim, model_size=16):
+    def __init__(self, z_dim, img_size, scale=1):
         super(Encoder, self).__init__()
 
-        self.encoder = nn.Sequential(
+        model_size = 16 * scale
 
-            ResBlockDown(1, model_size),
-            ResBlockDown(model_size, model_size * 2),
-            ResBlockDown(model_size * 2, model_size * 4),
-            ResBlockDown(model_size * 4, model_size * 8),
-            ResBlockDown(model_size * 8, model_size * 16),
+        depth, h, w = img_size
+        max_dim = max(h, w)
 
-            nn.Conv2d(model_size * 16, model_size * 16, kernel_size=1),
+        # Calculate the number of layers needed
+        n_layers = math.floor(math.log2(max_dim)) - 4  # subtract 2 because we start from 4x4
+
+        self.blocks = nn.ModuleList()
+        self.blocks.append(ResBlockDown(depth, model_size))
+        for i in range(n_layers):
+            in_channels = model_size if i == 0 else model_size * 2**i
+            out_channels = model_size * 2**(i + 1)
+            self.blocks.append(ResBlockDown(in_channels, out_channels))
+
+        # Calculate the size of the input to the last linear layer
+        self.last_linear_dim = ((max_dim // (2 ** (n_layers+2))) ** 2) * model_size * 2**n_layers
+
+        self.encoder_tail = nn.Sequential(
+            nn.Conv2d(model_size * 2**n_layers, model_size * 2**n_layers, kernel_size=1),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(4 * 4 * 16 * model_size, z_dim)
+            nn.Linear(self.last_linear_dim, z_dim)
         )
 
     def forward(self, x):
-        return self.encoder(x)
+        for block in self.blocks:
+            x = block(x)
+        x = self.encoder_tail(x)
+        return x
 
 
 class Sketcher(nn.Module):
