@@ -2,3 +2,5 @@
 2023-05-27 19:38:41,830 - training.ExperimentFramework - INFO - Starting experiment.
 2023-05-27 19:38:41,912 - training.ExperimentFramework - INFO - No checkpoint found.
 2023-05-27 19:38:41,913 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-27 20:44:53,224 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-27 20:44:53,264 - training.ExperimentFramework - INFO - Checkpoint saved!
