@@ -32,6 +32,7 @@ class Experiment:
                  pre_sketcher,
                  root_dir,
                  sketcher=None,
+                 no_memory_optimization=False,
                  z_loss_alpha=1,
                  content_loss_alpha=1,
                  shape_loss_alpha=1,
@@ -67,6 +68,8 @@ class Experiment:
         self.experiment_seed = experiment_seed
 
         self.dataset_choice = dataset_choice
+
+        self.no_memory_optimization = no_memory_optimization
 
         self.pre_generator = pre_generator.to(self.device)
         for param in self.pre_generator.parameters():
@@ -205,18 +208,29 @@ class Experiment:
                 encoder_loss.backward()
                 encoder_loss_agg += encoder_loss.item()
                 if tensorboard_step % 10 == 0:
-                    for i in range(mini_batch_size):
-                        z_i = fake_z[i].unsqueeze(0)
-                        with torch.no_grad():
-                            fake.append(self._generate_image(z_i).cpu().detach())
+                    if self.no_memory_optimization:
+                        fake_src = self._generate_image(fake_z)
+                        for i in range(mini_batch_size):
+                            fake.append(fake_src[i].unsqueeze(0).cpu().detach())
+                    else:
+                        for i in range(mini_batch_size):
+                            z_i = fake_z[i].unsqueeze(0)
+                            with torch.no_grad():
+                                fake.append(self._generate_image(z_i).cpu().detach())
                 continue
 
-            fake_src = torch.zeros_like(mini_batch_src, device=self.device)
-            for i in range(mini_batch_size):
-                z_i = fake_z[i].unsqueeze(0)
-                fake_src[i] = self._generate_image(z_i)
+            if self.no_memory_optimization:
+                fake_src = self._generate_image(fake_z)
                 if tensorboard_step % 10 == 0:
-                    fake.append(fake_src[i].unsqueeze(0).cpu().detach())
+                    for i in range(mini_batch_size):
+                        fake.append(fake_src[i].unsqueeze(0).cpu().detach())
+            else:
+                fake_src = torch.zeros_like(mini_batch_src, device=self.device)
+                for i in range(mini_batch_size):
+                    z_i = fake_z[i].unsqueeze(0)
+                    fake_src[i] = self._generate_image(z_i)
+                    if tensorboard_step % 10 == 0:
+                        fake.append(fake_src[i].unsqueeze(0).cpu().detach())
 
             if self.content_loss_alpha != 0:
                 content_loss = self.img_loss(mini_batch_src, fake_src)
@@ -239,10 +253,13 @@ class Experiment:
                     shape_loss.add_(self.conceptual_loss(mini_batch_sketch, real_sketch))
                     shape_loss.add_(self.conceptual_loss(mini_batch_sketch, fake_sketch))
             else:
-                fake_sketch = torch.zeros_like(mini_batch_sketch, device=self.device)
-                for i in range(mini_batch_size):
-                    fake_src_i = fake_src[i].unsqueeze(0)
-                    fake_sketch[i] = self._generate_sketch(fake_src_i)
+                if self.no_memory_optimization:
+                    fake_sketch = self._generate_sketch(fake_src)
+                else:
+                    fake_sketch = torch.zeros_like(mini_batch_sketch, device=self.device)
+                    for i in range(mini_batch_size):
+                        fake_src_i = fake_src[i].unsqueeze(0)
+                        fake_sketch[i] = self._generate_sketch(fake_src_i)
 
                 shape_loss = self.img_loss(mini_batch_sketch, fake_sketch)
                 if self.use_conceptual_loss:
