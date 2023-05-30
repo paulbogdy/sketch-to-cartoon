@@ -12,9 +12,6 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 from dataset.dataset import SketchInverterDataset
-from eval.FID import FID
-from eval.LDPS import LDPS
-from eval.LPIPS import LPIPS
 
 from losses.AlexNetLoss import AlexNetLoss
 from losses.CosineSimilarityLoss import CosineSimilarityLoss
@@ -285,46 +282,3 @@ class SimpleExperiment:
         # check if sketcher exists before loading sketcher parameters
         self.experiment_seed = config['experiment_seed']
         # load all other parameters...
-
-    def evaluate(self):
-        self.logger.info('Starting evaluation.')
-        test_dataset = self.load_test_dataset()
-
-        # Load latest checkpoint if it exists
-        latest_checkpoint = self.find_latest_checkpoint()
-        if latest_checkpoint is not None:
-            self.logger.info(f'Found latest checkpoint: {latest_checkpoint}. Loading checkpoint.')
-            self.load_model(latest_checkpoint)
-            self.logger.info('Checkpoint loaded.')
-        else:
-            self.logger.info('No checkpoint found.')
-
-        self.logger.info('Evaluating FID score.')
-        print('Evaluating FID score.')
-        fid = FID()
-        fid_score = fid(self.encoder, self.pre_generator, test_dataset, batch_size=4)
-        self.logger.info(f'FID score: {fid_score}')
-
-        del fid
-
-        self.logger.info('Evaluating LPIPS score.')
-        print('Evaluating LPIPS score.')
-        lpips = LPIPS()
-        lpips_score = lpips(self.encoder, self.pre_generator, test_dataset, batch_size=4)
-        self.logger.info(f'LPIPS score: {lpips_score}')
-
-        del lpips
-
-        self.logger.info('Evaluating LDPS score.')
-        print('Evaluating LDPS score.')
-        ldps = LDPS(os.path.dirname(self.root_dir))
-        ldps_score = ldps(self.encoder, self.pre_generator, test_dataset, batch_size=4)
-        self.logger.info(f'LDPS score: {ldps_score}')
-
-        del ldps
-
-        return {
-            "FID": fid_score,
-            "LPIPS": lpips_score,
-            "LDPS": ldps_score,
-        }
