@@ -45,14 +45,14 @@ class Donarobu128Dataset(Dataset):
 
 
 class SketchInverterDataset(Dataset):
-    def __init__(self, root_dir, device, transform=None, image_size=(512, 512), z_dim=512):
+    def __init__(self, root_dir, transform=None, image_size=(512, 512), z_dim=512):
         self.root_dir = root_dir
         self.transform = transform
         self.image_size = image_size
         self.z_dim = z_dim
         self.sketch_paths = []
         self.src_paths = []
-        self.points = []
+        self.point_paths = []
         sketch_dir = os.path.join(self.root_dir, 'sketch')
         src_dir = os.path.join(self.root_dir, 'src')
         point_dir = os.path.join(self.root_dir, 'points')
@@ -63,28 +63,7 @@ class SketchInverterDataset(Dataset):
                 point_path = os.path.join(point_dir, filename.split('.')[0] + '.pt')
                 self.sketch_paths.append(sketch_path)
                 self.src_paths.append(src_path)
-                self.points.append(torch.load(point_path))
-
-    def preprocess_images(self):
-        valid_src_paths = []
-        valid_sketch_paths = []
-        valid_point_paths = []
-
-        for src_path, sketch_path, point_path in tqdm(zip(self.src_paths, self.sketch_paths, self.point_paths),
-                                                      desc="Checking images"):
-            try:
-                Image.open(src_path)
-                Image.open(sketch_path)
-                torch.load(point_path)
-                valid_src_paths.append(src_path)
-                valid_sketch_paths.append(sketch_path)
-                valid_point_paths.append(point_path)
-            except (IOError, ValueError):
-                print(f"Invalid data at: {src_path}, {sketch_path}, {point_path}")
-
-        self.src_paths = valid_src_paths
-        self.sketch_paths = valid_sketch_paths
-        self.point_paths = valid_point_paths
+                self.point_paths.append(point_path)
 
     def __len__(self):
         return len(self.src_paths)
@@ -92,14 +71,20 @@ class SketchInverterDataset(Dataset):
     def __getitem__(self, idx):
         sketch_path = self.sketch_paths[idx]
         src_path = self.src_paths[idx]
+        point_path = self.point_paths[idx]
         sketch_image = Image.open(sketch_path)
         src_image = Image.open(src_path)
+
+        # Memory map the file
+        storage = torch.FloatStorage.from_file(point_path, shared=True, size=self.z_dim)
+        # Create a tensor from the storage
+        point_tensor = torch.FloatTensor(storage).clone().detach()
 
         if self.transform:
             sketch_image = self.transform(sketch_image)
             src_image = self.transform(src_image)
 
-        return sketch_image[:1], src_image, self.points[idx]
+        return sketch_image[:1], src_image, point_tensor
 
 
 class DatasetForTestingDiscriminator(Dataset):

@@ -186,11 +186,10 @@ class SimpleExperiment:
         if self.dataset_choice == self.Datasets.CARTOON:
             dataset = SketchInverterDataset(
                 root_dir=os.path.join(self.datasets_dir, 'synthetic_dataset_cartoon_faces'),
-                device=self.device,
                 transform=ToTensor(),
                 image_size=(256, 256)
             )
-            return DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+            return DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
         else:
 
             raise NotImplementedError('Dataset not implemented')
