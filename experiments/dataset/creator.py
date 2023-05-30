@@ -58,4 +58,4 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 G = Generator2().to(device)
 S = HDENet().to(device)
 
-generate_from_gan(G, S, "../../dataset/synthetic_dataset_cartoon_faces", device, num_images=32000, batch_size=8)
+generate_from_gan(G, S, "../../dataset/synthetic_dataset_cartoon_faces_test", device, num_images=3200, batch_size=8)

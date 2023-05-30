@@ -104,6 +104,30 @@ class SketchInverterDataset(Dataset):
         return sketch_image[:1], src_image, point_tensor
 
 
+class DatasetForTestingDiscriminator(Dataset):
+    def __init__(self, root_dir, src_name="src", transform=None, image_size=(256, 256)):
+        self.root_dir = root_dir
+        self.transform = transform
+        self.image_size = image_size
+        self.src_paths = []
+        src_dir = os.path.join(self.root_dir, src_name)
+        for filename in os.listdir(src_dir):
+            if filename.endswith('.png') or filename.endswith('.jpg'):
+                src_path = os.path.join(src_dir, filename)
+                self.src_paths.append(src_path)
+
+    def __len__(self):
+        return len(self.src_paths)
+
+    def __getitem__(self, idx):
+        src_path = self.src_paths[idx]
+        src_image = Image.open(src_path)
+
+        if self.transform:
+            src_image = self.transform(src_image)
+
+        return src_image
+
 class CartoonImageDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir

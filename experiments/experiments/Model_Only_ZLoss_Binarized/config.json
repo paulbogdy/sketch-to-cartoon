@@ -1,0 +1,1 @@
+{"experiment_name": "Model_Only_ZLoss_Binarized", "dataset_choice": "CARTOON", "z_loss_alpha": 1, "content_loss_alpha": 0, "shape_loss_alpha": 0, "use_conceptual_loss": false, "encoder_optimizer": "ADAM", "encoder_hyper_params": {"lr": 0.001}, "sketcher_exists": false, "sketcher_optimizer": null, "sketcher_hyper_params": null, "experiment_description": "", "experiment_seed": 42}

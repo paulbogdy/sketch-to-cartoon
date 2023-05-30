@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pathlib import Path
 
 import numpy as np
@@ -12,7 +15,7 @@ import torch
 
 
 def from_points(generator, sketcher, path, device):
-    points_paths = os.listdir(path)[:5]
+    points_paths = os.listdir(path)[:1000]
     src_dir = path.replace("points", "src_test")
     os.makedirs(src_dir, exist_ok=True)
     sketch_dir = path.replace("points", "sketch_test")
@@ -21,9 +24,7 @@ def from_points(generator, sketcher, path, device):
     sketcher.eval()
     for point_path in tqdm(points_paths, total=len(points_paths)):
         point = torch.load(os.path.join(path, point_path)).to(device)
-        print(point.shape)
         point = point.unsqueeze(0)
-        print(point.shape)
         path_name = point_path.split('.')[0]
         with torch.no_grad():
             fake_image = generator(point)
@@ -39,7 +40,7 @@ root_path = Path(__file__).parent.parent
 S = HDENet().to(device)
 G = CartoonGenerator(root_path).to(device)
 
-# from_points(G, S, "../../dataset/synthetic_dataset_cartoon_faces/points", device)
+from_points(G, S, "../../dataset/synthetic_dataset_cartoon_faces/points", device)
 
 # valid_images = os.listdir("../../dataset/synthetic_dataset_cartoon_faces/src")
 

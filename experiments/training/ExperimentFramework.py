@@ -7,13 +7,17 @@ import logging
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import ToTensor
 from tqdm import tqdm
 from dataset.dataset import SketchInverterDataset
+from eval.FID import FID
+from eval.LDPS import LDPS
+from eval.LPIPS import LPIPS
 
 from losses.AlexNetLoss import AlexNetLoss
+from losses.CosineSimilarityLoss import CosineSimilarityLoss
 
 
 class Experiment:
@@ -34,9 +38,11 @@ class Experiment:
                  sketcher=None,
                  no_memory_optimization=False,
                  z_loss_alpha=1,
+                 use_cosine_for_z=False,
                  content_loss_alpha=1,
                  shape_loss_alpha=1,
                  use_conceptual_loss=False,
+                 binarize_sketch=False,
                  encoder_optimizer: Optimizers = Optimizers.ADAM,
                  encoder_hyper_params={'lr': 0.001},
                  sketcher_optimizer: Optimizers = Optimizers.ADAM,
@@ -80,6 +86,8 @@ class Experiment:
         self.encoder = encoder.to(self.device)
         self.sketcher = sketcher.to(self.device) if sketcher else None
 
+        self.binarize_sketch = binarize_sketch
+
         self.encoder_optimizer = encoder_optimizer
         self.encoder_hyper_params = encoder_hyper_params
 
@@ -90,7 +98,10 @@ class Experiment:
             self.sketcher_optimizer = None
             self.sketcher_hyper_params = None
 
-        self.z_loss = torch.nn.L1Loss()
+        if use_cosine_for_z:
+            self.z_loss = CosineSimilarityLoss()
+        else:
+            self.z_loss = torch.nn.L1Loss()
         self.img_loss = torch.nn.L1Loss()
         self.conceptual_loss = AlexNetLoss(self.device)
 
@@ -135,7 +146,8 @@ class Experiment:
                        batch_size=32,
                        num_epochs=1,
                        accumulation_steps=4,
-                       save_every_n_batches=10):
+                       save_every_n_batches=10,
+                       show_every_n_steps=10):
         self.logger.info('Starting experiment.')
         self.data_loader = self.load_dataset(batch_size=batch_size)
 
@@ -158,7 +170,7 @@ class Experiment:
                 if epoch == self.start_epoch and batch_idx < self.start_batch_idx:
                     continue
                 try:
-                    self.train_step(epoch, batch_idx, data, batch_size, accumulation_steps)
+                    self.train_step(epoch, batch_idx, data, batch_size, accumulation_steps, show_every_n_steps)
                 except KeyboardInterrupt:
                     self.logger.info("Keyboard interrupt detected!")
                     self.save_checkpoint(epoch, batch_idx, batch_size)
@@ -172,17 +184,21 @@ class Experiment:
                     return
                 if batch_idx % save_every_n_batches == 0:
                     self.save_checkpoint(epoch, batch_idx, batch_size)
+        self.save_checkpoint(num_epochs, 0, batch_size)
 
     def train_step(self,
                    epoch,
                    batch_idx,
                    data,
                    batch_size,
-                   accumulation_steps):
+                   accumulation_steps,
+                   show_every_n_steps=10):
         self.encoder_optim.zero_grad()
         if self.sketcher is not None:
             self.sketcher_optim.zero_grad()
         sketch, src, point = data
+        if self.binarize_sketch:
+            sketch = self.binarize(sketch)
         fake = []
 
         mini_batch_size = batch_size//accumulation_steps
@@ -207,7 +223,7 @@ class Experiment:
             if self.content_loss_alpha == 0 and self.shape_loss_alpha == 0:
                 encoder_loss.backward()
                 encoder_loss_agg += encoder_loss.item()
-                if tensorboard_step % 10 == 0:
+                if tensorboard_step % show_every_n_steps == 0:
                     if self.no_memory_optimization:
                         fake_src = self._generate_image(fake_z)
                         for i in range(mini_batch_size):
@@ -221,7 +237,7 @@ class Experiment:
 
             if self.no_memory_optimization:
                 fake_src = self._generate_image(fake_z)
-                if tensorboard_step % 10 == 0:
+                if tensorboard_step % show_every_n_steps == 0:
                     for i in range(mini_batch_size):
                         fake.append(fake_src[i].unsqueeze(0).cpu().detach())
             else:
@@ -229,7 +245,7 @@ class Experiment:
                 for i in range(mini_batch_size):
                     z_i = fake_z[i].unsqueeze(0)
                     fake_src[i] = self._generate_image(z_i)
-                    if tensorboard_step % 10 == 0:
+                    if tensorboard_step % show_every_n_steps == 0:
                         fake.append(fake_src[i].unsqueeze(0).cpu().detach())
 
             if self.content_loss_alpha != 0:
@@ -279,7 +295,7 @@ class Experiment:
         content_loss_agg /= accumulation_steps
         shape_loss_agg /= accumulation_steps
 
-        if tensorboard_step % 10 == 0:
+        if tensorboard_step % show_every_n_steps == 0:
             fake = torch.cat(fake, dim=0)
             self.writer_images.add_images('images/fake', fake, tensorboard_step)
             self.writer_images.add_images('images/real', src, tensorboard_step)
@@ -301,6 +317,29 @@ class Experiment:
         else:
 
             raise NotImplementedError('Dataset not implemented')
+
+    def load_test_dataset(self):
+        if self.dataset_choice == self.Datasets.CARTOON:
+            dataset = SketchInverterDataset(
+                root_dir=os.path.join(self.datasets_dir, 'synthetic_dataset_cartoon_faces_test'),
+                transform=ToTensor(),
+                image_size=(256, 256)
+            )
+            percentage = 10
+            num_examples = len(dataset)
+            num_subset = int(num_examples * (percentage / 100))
+
+            # Generate a list of indices without replacement.
+            indices = np.random.choice(num_examples, num_subset, replace=False)
+
+            subset = Subset(dataset, indices)
+            return subset
+        else:
+
+            raise NotImplementedError('Dataset not implemented')
+
+    def binarize(self, x, threshold=0.5):
+        return (x > threshold).float()
 
     def _generate_image(self, z):
         return self.pre_generator(z)
@@ -327,6 +366,12 @@ class Experiment:
         total_data_processed = checkpoint['total_data_processed']
         self.start_epoch = checkpoint['epoch']
         self.start_batch_idx = (total_data_processed % (len(self.data_loader) * new_batch_size)) // new_batch_size
+
+    def load_model(self, checkpoint_path):
+        checkpoint = torch.load(checkpoint_path)
+        self.encoder.load_state_dict(checkpoint['encoder_state_dict'])
+        if checkpoint['sketcher_state_dict'] is not None:
+            self.sketcher.load_state_dict(checkpoint['sketcher_state_dict'])
 
     def find_latest_checkpoint(self):
         checkpoints = glob.glob(os.path.join(self.checkpoint_dir, '*.pt'))
@@ -382,4 +427,44 @@ class Experiment:
         # load all other parameters...
 
     def evaluate(self):
-        pass
+        self.logger.info('Starting evaluation.')
+        test_dataset = self.load_test_dataset()
+
+        # Load latest checkpoint if it exists
+        latest_checkpoint = self.find_latest_checkpoint()
+        if latest_checkpoint is not None:
+            self.logger.info(f'Found latest checkpoint: {latest_checkpoint}. Loading checkpoint.')
+            self.load_model(latest_checkpoint)
+            self.logger.info('Checkpoint loaded.')
+        else:
+            self.logger.info('No checkpoint found.')
+
+        self.logger.info('Evaluating FID score.')
+        print('Evaluating FID score.')
+        fid = FID()
+        fid_score = fid(self.encoder, self.pre_generator, test_dataset, batch_size=4)
+        self.logger.info(f'FID score: {fid_score}')
+
+        del fid
+
+        self.logger.info('Evaluating LPIPS score.')
+        print('Evaluating LPIPS score.')
+        lpips = LPIPS()
+        lpips_score = lpips(self.encoder, self.pre_generator, test_dataset, batch_size=4)
+        self.logger.info(f'LPIPS score: {lpips_score}')
+
+        del lpips
+
+        self.logger.info('Evaluating LDPS score.')
+        print('Evaluating LDPS score.')
+        ldps = LDPS(os.path.dirname(self.root_dir))
+        ldps_score = ldps(self.encoder, self.pre_generator, test_dataset, batch_size=4)
+        self.logger.info(f'LDPS score: {ldps_score}')
+
+        del ldps
+
+        return {
+            "FID": fid_score,
+            "LPIPS": lpips_score,
+            "LDPS": ldps_score,
+        }

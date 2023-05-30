@@ -2,3 +2,18 @@
 2023-05-27 00:33:54,974 - training.ExperimentFramework - INFO - Starting experiment.
 2023-05-27 00:33:55,108 - training.ExperimentFramework - INFO - No checkpoint found.
 2023-05-27 00:33:55,109 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-29 00:29:01,760 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-29 00:29:01,761 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-29 00:29:01,845 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Only_ZLoss/checkpoints/epoch_8_batch_390.pt. Loading checkpoint.
+2023-05-29 00:30:32,482 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-29 00:30:32,483 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-29 00:30:32,564 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Only_ZLoss/checkpoints/epoch_8_batch_380.pt. Loading checkpoint.
+2023-05-29 00:30:32,612 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-29 00:30:32,612 - training.ExperimentFramework - INFO - Num epochs: 8
+2023-05-29 01:10:22,564 - training.ExperimentFramework - INFO - Keyboard interrupt detected!
+2023-05-29 01:10:22,594 - training.ExperimentFramework - INFO - Checkpoint saved!
+2023-05-29 01:10:48,178 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-29 01:10:48,188 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-29 01:10:48,320 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Only_ZLoss/checkpoints/epoch_9_batch_805.pt. Loading checkpoint.
+2023-05-29 01:10:48,334 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-29 01:10:48,334 - training.ExperimentFramework - INFO - Num epochs: 9

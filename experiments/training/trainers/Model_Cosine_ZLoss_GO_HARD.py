@@ -15,26 +15,19 @@ generator = CartoonGenerator(root_path)
 sketcher = HDENet()
 encoder = Encoder(generator.z_dim, (1, 256, 256))
 
-# function to get number of params of a model
-# def count_parameters(model):
-#     return sum(p.numel() for p in model.parameters())
-#
-#
-# print("Number of parameters of the generator: ", count_parameters(generator))
-# print("Number of parameters of the sketcher: ", count_parameters(sketcher))
-# print("Number of parameters of the encoder: ", count_parameters(encoder))
-# print("Number of parameters of the trainable sketcher: ", count_parameters(trainable_sketcher))
-
-Experiment("Model_Only_ZLoss",
+Experiment("Model_Cosine_ZLoss_GO_HARD",
            Experiment.Datasets.CARTOON,
            encoder,
            generator,
            sketcher,
            root_path,
-           content_loss_alpha=0,
+           encoder_hyper_params={'lr': 0.0002},
+           use_cosine_for_z=True,
+           content_loss_alpha=0,  
            shape_loss_alpha=0).run_experiment(
     batch_size=32,
-    num_epochs=10,
+    num_epochs=100,
     accumulation_steps=1,
     save_every_n_batches=1000,
+    show_every_n_steps=500,
 )

@@ -1,0 +1,53 @@
+2023-05-29 01:32:06,647 - training.ExperimentFramework - INFO - No config file found. Saving current config.
+2023-05-29 01:32:06,648 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-29 01:32:06,732 - training.ExperimentFramework - INFO - No checkpoint found.
+2023-05-29 01:32:06,732 - training.ExperimentFramework - INFO - Num epochs: 0
+2023-05-30 12:35:13,792 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 12:35:13,810 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 12:35:13,829 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 12:38:10,466 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 12:38:10,467 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 12:38:10,478 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 12:38:10,491 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 12:38:41,913 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 12:38:41,913 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 12:38:41,925 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 12:38:41,938 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 12:40:30,316 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 12:40:30,317 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 12:40:30,327 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 12:40:30,340 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 12:41:27,369 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 12:41:27,370 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 12:41:27,381 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 12:41:27,393 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 13:01:34,384 - training.ExperimentFramework - INFO - FID score: 37.29267883300781
+2023-05-30 14:36:46,868 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 14:36:46,869 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 14:36:46,879 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 14:36:46,893 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 14:36:46,893 - training.ExperimentFramework - INFO - Evaluating FID score.
+2023-05-30 14:39:06,917 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 14:39:06,918 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 14:39:06,929 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 14:39:06,943 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 14:39:06,943 - training.ExperimentFramework - INFO - Evaluating LPIPS score.
+2023-05-30 14:40:23,549 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 14:40:23,550 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 14:40:23,562 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 14:40:23,574 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 14:40:23,574 - training.ExperimentFramework - INFO - Evaluating FID score.
+2023-05-30 14:42:16,537 - training.ExperimentFramework - INFO - FID score: 69.38729858398438
+2023-05-30 14:42:16,538 - training.ExperimentFramework - INFO - Evaluating LPIPS score.
+2023-05-30 14:43:54,131 - training.ExperimentFramework - INFO - LPIPS score: 0.598568856716156
+2023-05-30 14:43:54,131 - training.ExperimentFramework - INFO - Evaluating LDPS score.
+2023-05-30 14:46:06,337 - training.ExperimentFramework - INFO - Found existing config file. Loading config.
+2023-05-30 14:46:06,338 - training.ExperimentFramework - INFO - Starting evaluation.
+2023-05-30 14:46:06,349 - training.ExperimentFramework - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/Model_Cosine_ZLoss/checkpoints/epoch_10_batch_0.pt. Loading checkpoint.
+2023-05-30 14:46:06,367 - training.ExperimentFramework - INFO - Checkpoint loaded.
+2023-05-30 14:46:06,367 - training.ExperimentFramework - INFO - Evaluating FID score.
+2023-05-30 14:47:52,060 - training.ExperimentFramework - INFO - FID score: 69.38729858398438
+2023-05-30 14:47:52,062 - training.ExperimentFramework - INFO - Evaluating LPIPS score.
+2023-05-30 14:49:29,296 - training.ExperimentFramework - INFO - LPIPS score: 0.598568856716156
+2023-05-30 14:49:29,296 - training.ExperimentFramework - INFO - Evaluating LDPS score.
+2023-05-30 14:52:35,495 - training.ExperimentFramework - INFO - LDPS score: 0.5459732413291931

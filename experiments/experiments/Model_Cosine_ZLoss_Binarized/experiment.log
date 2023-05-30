@@ -1,0 +1,4 @@
+2023-05-29 13:29:23,841 - training.ExperimentFramework - INFO - No config file found. Saving current config.
+2023-05-29 13:29:23,870 - training.ExperimentFramework - INFO - Starting experiment.
+2023-05-29 13:29:23,967 - training.ExperimentFramework - INFO - No checkpoint found.
+2023-05-29 13:29:23,967 - training.ExperimentFramework - INFO - Num epochs: 0
