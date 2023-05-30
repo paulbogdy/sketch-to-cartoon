@@ -1,0 +1,1 @@
+{"experiment_name": "TESTING", "dataset_choice": "CARTOON", "z_loss_alpha": 1, "encoder_optimizer": "ADAM", "encoder_hyper_params": {"lr": 0.001}, "experiment_seed": 42}

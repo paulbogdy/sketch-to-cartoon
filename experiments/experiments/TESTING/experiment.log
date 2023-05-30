@@ -1,0 +1,30 @@
+2023-05-30 19:31:24,936 - training.SimpleExperiment - INFO - No config file found. Saving current config.
+2023-05-30 19:31:24,936 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 19:31:25,019 - training.SimpleExperiment - INFO - No checkpoint found.
+2023-05-30 19:31:25,019 - training.SimpleExperiment - INFO - Num epochs: 0
+2023-05-30 19:34:03,840 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 19:34:03,840 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 19:34:03,924 - training.SimpleExperiment - INFO - No checkpoint found.
+2023-05-30 19:34:03,924 - training.SimpleExperiment - INFO - Num epochs: 0
+2023-05-30 19:36:52,371 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 19:36:52,371 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 19:36:52,453 - training.SimpleExperiment - INFO - No checkpoint found.
+2023-05-30 19:36:52,453 - training.SimpleExperiment - INFO - Num epochs: 0
+2023-05-30 19:37:14,486 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 19:37:14,486 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 19:37:14,569 - training.SimpleExperiment - INFO - No checkpoint found.
+2023-05-30 19:37:14,569 - training.SimpleExperiment - INFO - Num epochs: 0
+2023-05-30 19:37:14,876 - training.SimpleExperiment - INFO - Trying to save checkpoint...
+2023-05-30 19:37:14,923 - training.SimpleExperiment - INFO - Checkpoint saved!
+2023-05-30 19:38:39,956 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 19:38:39,957 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 19:38:40,040 - training.SimpleExperiment - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/TESTING/checkpoints/epoch_0_batch_0.pt. Loading checkpoint.
+2023-05-30 19:38:40,052 - training.SimpleExperiment - INFO - Checkpoint loaded.
+2023-05-30 19:38:40,052 - training.SimpleExperiment - INFO - Num epochs: 0
+2023-05-30 20:01:24,620 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 20:01:24,620 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 20:01:42,129 - training.SimpleExperiment - INFO - Found existing config file. Loading config.
+2023-05-30 20:01:42,129 - training.SimpleExperiment - INFO - Starting experiment.
+2023-05-30 20:02:23,609 - training.SimpleExperiment - INFO - Found latest checkpoint: /home/maneologu/Projects/sketch-to-cartoon/experiments/experiments/TESTING/checkpoints/epoch_0_batch_0.pt. Loading checkpoint.
+2023-05-30 20:02:23,619 - training.SimpleExperiment - INFO - Checkpoint loaded.
+2023-05-30 20:02:23,619 - training.SimpleExperiment - INFO - Num epochs: 0

@@ -20,7 +20,7 @@ from losses.AlexNetLoss import AlexNetLoss
 from losses.CosineSimilarityLoss import CosineSimilarityLoss
 
 
-class Experiment:
+class SimpleExperiment:
 
     class Datasets(Enum):
         CARTOON = 1
@@ -35,19 +35,10 @@ class Experiment:
                  pre_generator,
                  pre_sketcher,
                  root_dir,
-                 sketcher=None,
-                 no_memory_optimization=False,
                  z_loss_alpha=1,
-                 use_cosine_for_z=False,
-                 content_loss_alpha=1,
-                 shape_loss_alpha=1,
-                 use_conceptual_loss=False,
                  binarize_sketch=False,
                  encoder_optimizer: Optimizers = Optimizers.ADAM,
                  encoder_hyper_params={'lr': 0.001},
-                 sketcher_optimizer: Optimizers = Optimizers.ADAM,
-                 sketcher_hyper_params={'lr': 0.001},
-                 experiment_description='',
                  experiment_seed=42):
         self.experiment_name = experiment_name
 
@@ -75,8 +66,6 @@ class Experiment:
 
         self.dataset_choice = dataset_choice
 
-        self.no_memory_optimization = no_memory_optimization
-
         self.pre_generator = pre_generator.to(self.device)
         for param in self.pre_generator.parameters():
             param.requires_grad = False
@@ -84,36 +73,18 @@ class Experiment:
         for param in self.pre_sketcher.parameters():
             param.requires_grad = False
         self.encoder = encoder.to(self.device)
-        self.sketcher = sketcher.to(self.device) if sketcher else None
 
         self.binarize_sketch = binarize_sketch
 
         self.encoder_optimizer = encoder_optimizer
         self.encoder_hyper_params = encoder_hyper_params
 
-        if sketcher:
-            self.sketcher_optimizer = sketcher_optimizer
-            self.sketcher_hyper_params = sketcher_hyper_params
-        else:
-            self.sketcher_optimizer = None
-            self.sketcher_hyper_params = None
-
-        if use_cosine_for_z:
-            self.z_loss = CosineSimilarityLoss()
-        else:
-            self.z_loss = torch.nn.L1Loss()
-        self.img_loss = torch.nn.L1Loss()
-        self.conceptual_loss = AlexNetLoss(self.device)
+        self.z_loss = CosineSimilarityLoss()
 
         self.z_loss_alpha = z_loss_alpha
-        self.content_loss_alpha = content_loss_alpha
-        self.shape_loss_alpha = shape_loss_alpha
-        self.use_conceptual_loss = use_conceptual_loss
 
         self.writer_images = SummaryWriter(os.path.join(self.experiment_dir, 'runs', 'images'))
         self.writer_loss = SummaryWriter(os.path.join(self.experiment_dir, 'runs', 'loss'))
-
-        self.experiment_description = experiment_description
 
         self.start_epoch = 0
         self.start_batch_idx = 0
@@ -138,9 +109,6 @@ class Experiment:
 
         if encoder_optimizer == self.Optimizers.ADAM:
             self.encoder_optim = torch.optim.Adam(self.encoder.parameters(), **self.encoder_hyper_params)
-
-        if sketcher and sketcher_optimizer == self.Optimizers.ADAM:
-            self.sketcher_optim = torch.optim.Adam(self.sketcher.parameters(), **self.sketcher_hyper_params)
 
     def run_experiment(self,
                        batch_size=32,
@@ -194,117 +162,28 @@ class Experiment:
                    accumulation_steps,
                    show_every_n_steps=10):
         self.encoder_optim.zero_grad()
-        if self.sketcher is not None:
-            self.sketcher_optim.zero_grad()
         sketch, src, point = data
-        if self.binarize_sketch:
-            sketch = self.binarize(sketch)
-        fake = []
+        sketch = sketch.to(self.device)
+        src = src.to(self.device)
+        point = point.to(self.device)
 
-        mini_batch_size = batch_size//accumulation_steps
         tensorboard_step = batch_idx + len(self.data_loader) * epoch
 
-        encoder_loss_agg = 0
-        z_loss_agg = 0
-        content_loss_agg = 0
-        shape_loss_agg = 0
-
-        for step in range(accumulation_steps):
-            mini_batch_src = src[step * mini_batch_size: (step + 1) * mini_batch_size].to(self.device)
-            mini_batch_sketch = sketch[step * mini_batch_size: (step + 1) * mini_batch_size].to(self.device)
-            mini_batch_point = point[step * mini_batch_size: (step + 1) * mini_batch_size].to(self.device)
-
-            fake_z = self.encoder(mini_batch_sketch)
+        fake_z = self.encoder(sketch)
             
-            z_loss = self.z_loss(mini_batch_point, fake_z)
-            encoder_loss = z_loss * self.z_loss_alpha
-            z_loss_agg += z_loss.item()
+        encoder_loss = self.z_loss_alpha * self.z_loss(point, fake_z)
 
-            if self.content_loss_alpha == 0 and self.shape_loss_alpha == 0:
-                encoder_loss.backward()
-                encoder_loss_agg += encoder_loss.item()
-                if tensorboard_step % show_every_n_steps == 0:
-                    if self.no_memory_optimization:
-                        fake_src = self._generate_image(fake_z)
-                        for i in range(mini_batch_size):
-                            fake.append(fake_src[i].unsqueeze(0).cpu().detach())
-                    else:
-                        for i in range(mini_batch_size):
-                            z_i = fake_z[i].unsqueeze(0)
-                            with torch.no_grad():
-                                fake.append(self._generate_image(z_i).cpu().detach())
-                continue
-
-            if self.no_memory_optimization:
-                fake_src = self._generate_image(fake_z)
-                if tensorboard_step % show_every_n_steps == 0:
-                    for i in range(mini_batch_size):
-                        fake.append(fake_src[i].unsqueeze(0).cpu().detach())
-            else:
-                fake_src = torch.zeros_like(mini_batch_src, device=self.device)
-                for i in range(mini_batch_size):
-                    z_i = fake_z[i].unsqueeze(0)
-                    fake_src[i] = self._generate_image(z_i)
-                    if tensorboard_step % show_every_n_steps == 0:
-                        fake.append(fake_src[i].unsqueeze(0).cpu().detach())
-
-            if self.content_loss_alpha != 0:
-                content_loss = self.img_loss(mini_batch_src, fake_src)
-                if self.use_conceptual_loss:
-                    content_loss.add_(self.conceptual_loss(mini_batch_src, fake_src))
-                encoder_loss.add_(content_loss * self.content_loss_alpha)
-                content_loss_agg += content_loss.item()
-
-            if self.shape_loss_alpha == 0:
-                encoder_loss.backward()
-                encoder_loss_agg += encoder_loss.item()
-                continue
-
-            if self.sketcher:
-                fake_sketch = self.sketcher(fake_src)
-                real_sketch = self.sketcher(mini_batch_src)
-                shape_loss = self.img_loss(mini_batch_sketch, real_sketch)
-                shape_loss.add_(self.img_loss(mini_batch_sketch, fake_sketch))
-                if self.use_conceptual_loss:
-                    shape_loss.add_(self.conceptual_loss(mini_batch_sketch, real_sketch))
-                    shape_loss.add_(self.conceptual_loss(mini_batch_sketch, fake_sketch))
-            else:
-                if self.no_memory_optimization:
-                    fake_sketch = self._generate_sketch(fake_src)
-                else:
-                    fake_sketch = torch.zeros_like(mini_batch_sketch, device=self.device)
-                    for i in range(mini_batch_size):
-                        fake_src_i = fake_src[i].unsqueeze(0)
-                        fake_sketch[i] = self._generate_sketch(fake_src_i)
-
-                shape_loss = self.img_loss(mini_batch_sketch, fake_sketch)
-                if self.use_conceptual_loss:
-                    shape_loss.add_(self.conceptual_loss(mini_batch_sketch, fake_sketch))
-
-            encoder_loss.add_(shape_loss * self.shape_loss_alpha)
-            shape_loss_agg += shape_loss.item()
-
-            encoder_loss.backward()
-            encoder_loss_agg += encoder_loss.item()
+        encoder_loss.backward()
+        encoder_loss_agg = encoder_loss.item()
 
         self.encoder_optim.step()
-        if self.sketcher is not None:
-            self.sketcher_optim.step()
-        encoder_loss_agg /= accumulation_steps
-        z_loss_agg /= accumulation_steps
-        content_loss_agg /= accumulation_steps
-        shape_loss_agg /= accumulation_steps
 
         if tensorboard_step % show_every_n_steps == 0:
-            fake = torch.cat(fake, dim=0)
-            self.writer_images.add_images('images/fake', fake, tensorboard_step)
+            #self.writer_images.add_images('images/fake', fake, tensorboard_step)
             self.writer_images.add_images('images/real', src, tensorboard_step)
             self.writer_images.add_images('images/sketch', sketch, tensorboard_step)
 
         self.writer_loss.add_scalar('losses/Encoder Loss', encoder_loss_agg, tensorboard_step)
-        self.writer_loss.add_scalar('losses/Z Loss', z_loss_agg, tensorboard_step)
-        self.writer_loss.add_scalar('losses/Content Loss', content_loss_agg, tensorboard_step)
-        self.writer_loss.add_scalar('losses/Shape Loss', shape_loss_agg, tensorboard_step)
 
     def load_dataset(self, batch_size):
         if self.dataset_choice == self.Datasets.CARTOON:
@@ -355,16 +234,13 @@ class Experiment:
         checkpoint = {
             'epoch': epoch,
             'total_data_processed': total_data_processed,
-            'encoder_state_dict': self.encoder.state_dict(),
-            'sketcher_state_dict': self.sketcher.state_dict() if self.sketcher else None,
+            'encoder_state_dict': self.encoder.state_dict()
         }
         torch.save(checkpoint, checkpoint_path)
 
     def load_checkpoint(self, checkpoint_path, new_batch_size):
         checkpoint = torch.load(checkpoint_path)
         self.encoder.load_state_dict(checkpoint['encoder_state_dict'])
-        if checkpoint['sketcher_state_dict'] is not None:
-            self.sketcher.load_state_dict(checkpoint['sketcher_state_dict'])
         total_data_processed = checkpoint['total_data_processed']
         self.start_epoch = checkpoint['epoch']
         self.start_batch_idx = (total_data_processed % (len(self.data_loader) * new_batch_size)) // new_batch_size
@@ -372,8 +248,6 @@ class Experiment:
     def load_model(self, checkpoint_path):
         checkpoint = torch.load(checkpoint_path)
         self.encoder.load_state_dict(checkpoint['encoder_state_dict'])
-        if checkpoint['sketcher_state_dict'] is not None:
-            self.sketcher.load_state_dict(checkpoint['sketcher_state_dict'])
 
     def find_latest_checkpoint(self):
         checkpoints = glob.glob(os.path.join(self.checkpoint_dir, '*.pt'))
@@ -387,15 +261,8 @@ class Experiment:
             'experiment_name': self.experiment_name,
             'dataset_choice': self.dataset_choice.name,  # save the enum name
             'z_loss_alpha': self.z_loss_alpha,
-            'content_loss_alpha': self.content_loss_alpha,
-            'shape_loss_alpha': self.shape_loss_alpha,
-            'use_conceptual_loss': self.use_conceptual_loss,
             'encoder_optimizer': self.encoder_optimizer.name,  # save the enum name
             'encoder_hyper_params': self.encoder_hyper_params,
-            'sketcher_exists': self.sketcher is not None,  # flag to indicate if sketcher exists
-            'sketcher_optimizer': self.sketcher_optimizer.name if self.sketcher else None,
-            'sketcher_hyper_params': self.sketcher_hyper_params if self.sketcher else None,
-            'experiment_description': self.experiment_description,
             'experiment_seed': self.experiment_seed,
         }
 
@@ -413,18 +280,9 @@ class Experiment:
         # Load the parameters from the config dictionary
         self.dataset_choice = self.Datasets[config['dataset_choice']]  # load the enum from the name
         self.z_loss_alpha = config['z_loss_alpha']
-        self.content_loss_alpha = config['content_loss_alpha']
-        self.shape_loss_alpha = config['shape_loss_alpha']
         self.encoder_optimizer = self.Optimizers[config['encoder_optimizer']]  # load the enum from the name
         self.encoder_hyper_params = config['encoder_hyper_params']
         # check if sketcher exists before loading sketcher parameters
-        if config['sketcher_exists']:
-            self.sketcher_optimizer = self.Optimizers[config['sketcher_optimizer']]  # load the enum from the name
-            self.sketcher_hyper_params = config['sketcher_hyper_params']
-        else:
-            self.sketcher_optimizer = None
-            self.sketcher_hyper_params = None
-        self.experiment_description = config['experiment_description']
         self.experiment_seed = config['experiment_seed']
         # load all other parameters...
 
