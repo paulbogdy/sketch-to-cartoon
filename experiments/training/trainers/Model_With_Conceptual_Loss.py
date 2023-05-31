@@ -21,12 +21,13 @@ generator = CartoonGenerator(root_path)
 sketcher = HDENet()
 encoder = Encoder(generator.z_dim, (1, 256, 256))
 
-FullExperiment("Model_Simple",
+FullExperiment("Model_With_Conceptual_Loss",
                FullExperiment.Datasets.CARTOON,
                encoder,
                generator,
                sketcher,
-               root_path).run_experiment(
+               root_path,
+               use_conceptual_loss=True).run_experiment(
     batch_size,
     num_epochs=50,
     accumulation_steps=8,

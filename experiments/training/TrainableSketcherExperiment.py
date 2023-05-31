@@ -16,6 +16,7 @@ from dataset.dataset import SketchInverterDataset
 from losses.AlexNetLoss import AlexNetLoss
 from losses.CosineSimilarityLoss import CosineSimilarityLoss
 
+
 class Binarization:
     def __init__(self, threshold):
         self.threshold = threshold
@@ -23,8 +24,8 @@ class Binarization:
     def __call__(self, x):
         return (x > self.threshold).float()
 
-class FullExperiment:
 
+class TrainableSketcherExperiment:
     class Datasets(Enum):
         CARTOON = 1
 
@@ -36,16 +37,17 @@ class FullExperiment:
                  dataset_choice: Datasets,
                  encoder,
                  pre_generator,
-                 pre_sketcher,
+                 sketcher,
                  root_dir,
                  z_loss_alpha=1,
                  use_cosine_for_z=False,
-                 use_conceptual_loss=False,
                  content_loss_alpha=1,
                  shape_loss_alpha=1,
                  binarize_sketch=False,
                  encoder_optimizer: Optimizers = Optimizers.ADAM,
                  encoder_hyper_params={'lr': 0.001},
+                 sketcher_optimizer: Optimizers = Optimizers.ADAM,
+                 sketcher_hyper_params={'lr': 0.001},
                  experiment_seed=42):
         self.experiment_name = experiment_name
 
@@ -76,9 +78,7 @@ class FullExperiment:
         self.pre_generator = pre_generator.to(self.device)
         for param in self.pre_generator.parameters():
             param.requires_grad = False
-        self.pre_sketcher = pre_sketcher.to(self.device)
-        for param in self.pre_sketcher.parameters():
-            param.requires_grad = False
+        self.sketcher = sketcher.to(self.device)
         self.encoder = encoder.to(self.device)
 
         self.binarize_sketch = binarize_sketch
@@ -86,12 +86,14 @@ class FullExperiment:
         self.encoder_optimizer = encoder_optimizer
         self.encoder_hyper_params = encoder_hyper_params
 
+        self.sketcher_optimizer = sketcher_optimizer
+        self.sketcher_hyper_params = sketcher_hyper_params
+
         if use_cosine_for_z:
             self.z_loss = CosineSimilarityLoss()
         else:
             self.z_loss = torch.nn.L1Loss()
         self.img_loss = torch.nn.L1Loss()
-        self.use_conceptual_loss = use_conceptual_loss
         self.conceptual_loss = AlexNetLoss(self.device)
 
         self.z_loss_alpha = z_loss_alpha
@@ -124,6 +126,9 @@ class FullExperiment:
 
         if encoder_optimizer == self.Optimizers.ADAM:
             self.encoder_optim = torch.optim.Adam(self.encoder.parameters(), **self.encoder_hyper_params)
+
+        if sketcher_optimizer == self.Optimizers.ADAM:
+            self.sketcher_optim = torch.optim.Adam(self.sketcher.parameters(), **self.sketcher_hyper_params)
 
     def run_experiment(self,
                        batch_size=32,
@@ -183,7 +188,7 @@ class FullExperiment:
         point = point.to(self.device)
         fake = []
 
-        mini_batch_size = batch_size//accumulation_steps
+        mini_batch_size = batch_size // accumulation_steps
         tensorboard_step = batch_idx + len(self.data_loader) * epoch
 
         encoder_loss_agg = 0
@@ -197,7 +202,7 @@ class FullExperiment:
             mini_batch_point = point[step * mini_batch_size: (step + 1) * mini_batch_size]
 
             fake_z = self.encoder(mini_batch_sketch)
-            
+
             z_loss = self.z_loss(mini_batch_point, fake_z)
             encoder_loss = z_loss * self.z_loss_alpha
             z_loss_agg += z_loss.item()
@@ -207,15 +212,13 @@ class FullExperiment:
                 fake.append(fake_src.detach().cpu())
 
             content_loss = self.img_loss(mini_batch_src, fake_src)
-            if self.use_conceptual_loss:
-                content_loss.add_(self.conceptual_loss(mini_batch_src, fake_src))
             encoder_loss.add_(content_loss * self.content_loss_alpha)
             content_loss_agg += content_loss.item()
 
-            fake_sketch = self._generate_sketch(fake_src)
+            fake_sketch = self.sketcher(fake_src)
+            real_sketch = self.sketcher(mini_batch_src)
             shape_loss = self.img_loss(mini_batch_sketch, fake_sketch)
-            if self.use_conceptual_loss:
-                shape_loss.add_(self.conceptual_loss(mini_batch_sketch, fake_sketch))
+            shape_loss.add_(self.img_loss(real_sketch, fake_sketch))
 
             encoder_loss.add_(shape_loss * self.shape_loss_alpha)
             shape_loss_agg += shape_loss.item()
@@ -284,7 +287,7 @@ class FullExperiment:
         return self.pre_generator(z)
 
     def _generate_sketch(self, img):
-        return self.pre_sketcher(img)
+        return self.sketcher(img)
 
     def save_checkpoint(self, epoch, batch_idx, batch_size):
         checkpoint_path = os.path.join(self.checkpoint_dir, f'epoch_{epoch}_batch_{batch_idx}.pt')
