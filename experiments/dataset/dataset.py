@@ -45,9 +45,10 @@ class Donarobu128Dataset(Dataset):
 
 
 class SketchInverterDataset(Dataset):
-    def __init__(self, root_dir, transform=None, image_size=(512, 512), z_dim=512):
+    def __init__(self, root_dir, transform=None, binarize=None, image_size=(512, 512), z_dim=512):
         self.root_dir = root_dir
         self.transform = transform
+        self.binarize = binarize
         self.image_size = image_size
         self.z_dim = z_dim
         self.sketch_paths = []
@@ -76,13 +77,16 @@ class SketchInverterDataset(Dataset):
         src_image = Image.open(src_path)
 
         # Load the tensor normally into CPU memory
-        # point_tensor = torch.load(point_path, map_location=torch.device('cpu'))
+        point_tensor = torch.load(point_path, map_location=torch.device('cpu'))
 
         if self.transform:
             sketch_image = self.transform(sketch_image)
             src_image = self.transform(src_image)
 
-        return sketch_image[:1], src_image#, point_tensor
+        if self.binarize:
+            sketch_image = self.binarize(sketch_image)
+
+        return sketch_image[:1], src_image, point_tensor
 
 
 class DatasetForTestingDiscriminator(Dataset):

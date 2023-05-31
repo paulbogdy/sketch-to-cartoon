@@ -19,13 +19,13 @@ generator = CartoonGenerator(root_path)
 sketcher = HDENet()
 encoder = Encoder(generator.z_dim, (1, 256, 256))
 
-SimpleExperiment("Model_Cosine_ZLoss_Binarized",
+SimpleExperiment("Model_L1_ZLoss",
                  SimpleExperiment.Datasets.CARTOON,
                  encoder,
                  generator,
                  sketcher,
                  root_path,
-                 binarize_sketch=True).run_experiment(
+                 z_loss_type=SimpleExperiment.ZLossType.L1).run_experiment(
     batch_size=32,
     num_epochs=50,
     accumulation_steps=1,

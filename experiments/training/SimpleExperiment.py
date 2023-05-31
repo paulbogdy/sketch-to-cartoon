@@ -9,12 +9,20 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard import SummaryWriter
-from torchvision.transforms import ToTensor
+from torchvision.transforms import ToTensor, Compose
 from tqdm import tqdm
 from dataset.dataset import SketchInverterDataset
 
 from losses.AlexNetLoss import AlexNetLoss
 from losses.CosineSimilarityLoss import CosineSimilarityLoss
+
+
+class Binarization:
+    def __init__(self, threshold):
+        self.threshold = threshold
+
+    def __call__(self, x):
+        return (x > self.threshold).float()
 
 
 class SimpleExperiment:
@@ -25,6 +33,10 @@ class SimpleExperiment:
     class Optimizers(Enum):
         ADAM = 1
 
+    class ZLossType(Enum):
+        COSINE = 1
+        L1 = 2
+
     def __init__(self,
                  experiment_name: str,
                  dataset_choice: Datasets,
@@ -32,6 +44,7 @@ class SimpleExperiment:
                  pre_generator,
                  pre_sketcher,
                  root_dir,
+                 z_loss_type=ZLossType.COSINE,
                  z_loss_alpha=1,
                  binarize_sketch=False,
                  encoder_optimizer: Optimizers = Optimizers.ADAM,
@@ -76,7 +89,10 @@ class SimpleExperiment:
         self.encoder_optimizer = encoder_optimizer
         self.encoder_hyper_params = encoder_hyper_params
 
-        self.z_loss = CosineSimilarityLoss()
+        if z_loss_type == self.ZLossType.COSINE:
+            self.z_loss = CosineSimilarityLoss()
+        else:
+            self.z_loss = torch.nn.L1Loss()
 
         self.z_loss_alpha = z_loss_alpha
 
@@ -185,9 +201,14 @@ class SimpleExperiment:
 
     def load_dataset(self, batch_size):
         if self.dataset_choice == self.Datasets.CARTOON:
+            if self.binarize_sketch:
+                binarize = Binarization(0.5)
+            else:
+                binarize = None
             dataset = SketchInverterDataset(
                 root_dir=os.path.join(self.datasets_dir, 'synthetic_dataset_cartoon_faces'),
                 transform=ToTensor(),
+                binarize=binarize,
                 image_size=(256, 256)
             )
             return DataLoader(dataset,
@@ -196,8 +217,7 @@ class SimpleExperiment:
                               drop_last=True,
                               num_workers=4,
                               pin_memory=True,
-                              prefetch_factor=10,
-                              pin_memory_device=self.device.__str__())
+                              prefetch_factor=10)
         else:
 
             raise NotImplementedError('Dataset not implemented')
