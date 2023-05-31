@@ -4,12 +4,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from models.HEDNet import HDENet
-from models.SketchInverter import Encoder, Sketcher
-from training.ExperimentFramework import Experiment
+from models.SketchInverter import Encoder
 from training.SimpleExperiment import SimpleExperiment
 from pathlib import Path
 import torch
-from models.StyleGan2 import Discriminator
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -31,17 +29,5 @@ SimpleExperiment("TESTING",
     num_epochs=10,
     accumulation_steps=1,
     save_every_n_batches=1000,
-    show_every_n_steps=250,
+    show_every_n_steps=1000,
 )
-
-# evaluation = Experiment("TESTING",
-#                         Experiment.Datasets.CARTOON,
-#                         encoder,
-#                         generator,
-#                         sketcher,
-#                         root_path,
-#                         use_cosine_for_z=True,
-#                         content_loss_alpha=0,
-#                         shape_loss_alpha=0).evaluate()
-#
-# print(evaluation)

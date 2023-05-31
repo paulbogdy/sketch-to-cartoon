@@ -135,7 +135,8 @@ class SimpleExperiment:
                 if epoch == self.start_epoch and batch_idx < self.start_batch_idx:
                     continue
                 try:
-                    self.train_step(epoch, batch_idx, data, batch_size, accumulation_steps, show_every_n_steps)
+                    self.train_step(epoch, batch_idx, data, show_every_n_steps)
+                    pass
                 except KeyboardInterrupt:
                     self.logger.info("Keyboard interrupt detected!")
                     self.save_checkpoint(epoch, batch_idx, batch_size)
@@ -155,8 +156,6 @@ class SimpleExperiment:
                    epoch,
                    batch_idx,
                    data,
-                   batch_size,
-                   accumulation_steps,
                    show_every_n_steps=10):
         self.encoder_optim.zero_grad()
         sketch, src, point = data
@@ -176,9 +175,11 @@ class SimpleExperiment:
         self.encoder_optim.step()
 
         if tensorboard_step % show_every_n_steps == 0:
-            #self.writer_images.add_images('images/fake', fake, tensorboard_step)
-            self.writer_images.add_images('images/real', src, tensorboard_step)
-            self.writer_images.add_images('images/sketch', sketch, tensorboard_step)
+            with torch.no_grad():
+                fake = self._generate_image(fake_z[-1].unsqueeze(0))
+            self.writer_images.add_image('images/fake', fake[-1], tensorboard_step)
+            self.writer_images.add_image('images/real', src[-1], tensorboard_step)
+            self.writer_images.add_image('images/sketch', sketch[-1], tensorboard_step)
 
         self.writer_loss.add_scalar('losses/Encoder Loss', encoder_loss_agg, tensorboard_step)
 
@@ -189,7 +190,14 @@ class SimpleExperiment:
                 transform=ToTensor(),
                 image_size=(256, 256)
             )
-            return DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
+            return DataLoader(dataset,
+                              batch_size=batch_size,
+                              shuffle=True,
+                              drop_last=True,
+                              num_workers=4,
+                              pin_memory=True,
+                              prefetch_factor=10,
+                              pin_memory_device=self.device.__str__())
         else:
 
             raise NotImplementedError('Dataset not implemented')
@@ -199,7 +207,6 @@ class SimpleExperiment:
             dataset = SketchInverterDataset(
                 root_dir=os.path.join(self.datasets_dir, 'synthetic_dataset_cartoon_faces_test'),
                 transform=ToTensor(),
-                device=self.device,
                 image_size=(256, 256)
             )
             percentage = 10

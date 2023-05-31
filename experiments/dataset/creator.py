@@ -25,7 +25,7 @@ def generate_from_gan(generator, sketcher, dst_path, device, num_images=1000, ba
         with torch.no_grad():
             fake_images = generator(z)
             for j in range(batch_size):
-                torch.save(z[j], os.path.join(z_points_path, f"{i * batch_size + j}.pt"))
+                torch.save(z[j].cpu(), os.path.join(z_points_path, f"{i * batch_size + j}.pt"))
                 torchvision.utils.save_image(fake_images[j], os.path.join(src_images_path, f"{i * batch_size + j}.png"))
             del z
             fake_images = sketcher(fake_images)
@@ -58,4 +58,4 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 G = Generator2().to(device)
 S = HDENet().to(device)
 
-generate_from_gan(G, S, "../../dataset/synthetic_dataset_cartoon_faces_test", device, num_images=3200, batch_size=8)
+generate_from_gan(G, S, "../../dataset/testing_faster_run_pls", device, num_images=1000, batch_size=8)

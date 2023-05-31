@@ -1,4 +1,0 @@
-2023-05-22 17:41:21,123 - training.ExperimentFramework - INFO - No config file found. Saving current config.
-2023-05-22 17:41:21,211 - training.ExperimentFramework - INFO - No checkpoint found.
-2023-05-22 20:21:30,957 - training.ExperimentFramework - INFO - Trying to save checkpoint...
-2023-05-22 20:21:31,607 - training.ExperimentFramework - INFO - Checkpoint saved!

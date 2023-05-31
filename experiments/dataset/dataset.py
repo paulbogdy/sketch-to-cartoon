@@ -75,16 +75,14 @@ class SketchInverterDataset(Dataset):
         sketch_image = Image.open(sketch_path)
         src_image = Image.open(src_path)
 
-        # Memory map the file
-        storage = torch.FloatStorage.from_file(point_path, shared=True, size=self.z_dim)
-        # Create a tensor from the storage
-        point_tensor = torch.FloatTensor(storage).clone().detach()
+        # Load the tensor normally into CPU memory
+        # point_tensor = torch.load(point_path, map_location=torch.device('cpu'))
 
         if self.transform:
             sketch_image = self.transform(sketch_image)
             src_image = self.transform(src_image)
 
-        return sketch_image[:1], src_image, point_tensor
+        return sketch_image[:1], src_image#, point_tensor
 
 
 class DatasetForTestingDiscriminator(Dataset):
@@ -110,6 +108,7 @@ class DatasetForTestingDiscriminator(Dataset):
             src_image = self.transform(src_image)
 
         return src_image
+
 
 class CartoonImageDataset(Dataset):
     def __init__(self, root_dir, transform=None):
