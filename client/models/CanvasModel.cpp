@@ -94,3 +94,7 @@ void CanvasModel::setDrawTool(std::shared_ptr<DrawTool> tool) {
     _drawTool = std::move(tool);
 }
 
+void CanvasModel::setDrawToolWidth(int width) {
+    _drawTool->setWidth(width);
+}
+

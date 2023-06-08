@@ -16,6 +16,7 @@ public:
     QImage shadow() const;
     void setShadow(const QImage &image);
     void setDrawTool(std::shared_ptr<DrawTool> tool);
+    void setDrawToolWidth(int width);
 public slots:
     void setImage(const QImage &image);
     void beginDraw(const QPoint& point);

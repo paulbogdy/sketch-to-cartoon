@@ -1,11 +1,14 @@
 import os
 
 import torch
+
+from eval.FID2 import FID2
 from models.SketchInverter import Encoder
 
 from eval.FID import FID
 from eval.LPIPS import LPIPS
 from eval.LDPS import LDPS
+from eval.SketchFidelity import SketchFidelity
 
 import csv
 
@@ -25,8 +28,10 @@ class Evaluator:
             param.requires_grad = False
 
         self.fid = FID()
+        self.fid2 = FID2()
         self.lpips = LPIPS()
         self.ldps = LDPS(root_dir)
+        self.sf = SketchFidelity()
 
     def evaluate_all(self, batch_size=8):
         evaluation_results = []
@@ -69,5 +74,26 @@ class Evaluator:
             "LDPS": ldps_score,
         }
 
+    def evaluate_model_SF(self, model_name, batch_size=8):
+        model_path = os.path.join(self.models_folder, model_name)
+        checkpoint = torch.load(model_path)
+        self.encoder.load_state_dict(checkpoint['encoder_state_dict'])
+
+        print(f'Starting evaluation for {model_name}.')
+        fidelity = self.sf(self.encoder, self.generator, self.dataset, batch_size=batch_size)
+        print(f'M: {model_name} | Fidelity score: {fidelity}')
+
+        return fidelity
+
+    def evaluate_model_FID2(self, model_name, batch_size=8):
+        model_path = os.path.join(self.models_folder, model_name)
+        checkpoint = torch.load(model_path)
+        self.encoder.load_state_dict(checkpoint['encoder_state_dict'])
+
+        print(f'Starting evaluation for {model_name}.')
+        fid2 = self.fid2(self.encoder, self.generator, self.dataset, batch_size=batch_size)
+        print(f'M: {model_name} | FID2 score: {fid2}')
+
+        return fid2
 
 

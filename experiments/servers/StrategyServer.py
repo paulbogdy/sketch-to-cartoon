@@ -3,7 +3,7 @@ import socket
 import io
 import struct
 from typing import List, Tuple
-from PIL import Image
+from PIL import Image, ImageOps
 import time
 
 
@@ -66,9 +66,18 @@ class StrategyServer:
                 break
             sketch_data += chunk
 
-        img = Image.open(io.BytesIO(sketch_data)).convert('L')
+        img = Image.open(io.BytesIO(sketch_data))
+
+        # Create a new white RGB image
+        img_rgb = Image.new("RGB", img.size, "WHITE")
+        # Paste the RGBA image onto the RGB image
+        img_rgb.paste(img, (0, 0), img)
+
+        # Convert to grayscale
+        img_gray = img_rgb.convert('L')
+        img_gray = ImageOps.invert(img_gray)
         print("Done")
-        return img
+        return img_gray
 
     def receive_num_samples(self) -> int:
         print("Receiving number of samples...", end=' ')

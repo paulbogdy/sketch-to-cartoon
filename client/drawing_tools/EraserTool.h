@@ -26,7 +26,7 @@ public:
     }
 
     void setWidth(int width) override {
-        _eraser.setWidth(width);
+        _eraser.setWidth(width * 5);
     }
 
 private:

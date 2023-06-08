@@ -27,8 +27,9 @@ dataset = SketchInverterDataset(
 # dataset = Subset(dataset, indices)
 
 generator = CartoonGenerator(root_dir)
-encoder = Encoder(generator.z_dim, (1, 256, 256))
+encoder = Encoder(generator.z_dim, (1, 256, 256), scale=2)
 
 evaluator = Evaluator(root_dir, os.path.join(root_dir, 'trained_models'), dataset, generator, encoder)
 
-evaluator.evaluate_all()
+evaluator.evaluate_model_FID2('Model_Cosine_ZLoss_500.pt')
+evaluator.evaluate_model_FID2('Model_L1_ZLoss_500.pt')

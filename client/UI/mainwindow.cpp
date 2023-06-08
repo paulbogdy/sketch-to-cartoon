@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QButtonGroup>
+#include <QCheckBox>
 #include "mainwindow.h"
 #include "SettingsWindow.h"
 #include "../views/BottomBar.h"
@@ -79,6 +80,25 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout* buttonLayout = new QHBoxLayout(buttonContainer);
     buttonLayout->setContentsMargins(0, 0, 0, 0); // Remove padding
 
+    QCheckBox *showShadowCheckBox = new QCheckBox(this);
+    showShadowCheckBox->setText("Show Shadow");
+    showShadowCheckBox->setLayoutDirection(Qt::RightToLeft); // Move the text to the left of the checkbox
+    showShadowCheckBox->setCheckState(Qt::Checked); // Initially checked
+    showShadowCheckBox->setStyleSheet("QCheckBox {color: " + textColor + "; padding: 5px; margin-right: 10px;}");
+    connect(showShadowCheckBox, &QCheckBox::stateChanged, _canvasView, &CanvasView::updateShadowVisibility);
+
+    // Create Stroke Size Slider
+    QSlider *brushSizeSlider = new QSlider(Qt::Horizontal, this);
+    brushSizeSlider->setRange(1, 10); // Replace with your own range
+    brushSizeSlider->setFixedWidth(100); // Replace with your own width
+    brushSizeSlider->setValue(1); // Replace with your initial value
+    brushSizeSlider->setStyleSheet("QSlider {margin-right: 10px;}");
+    connect(brushSizeSlider, &QSlider::valueChanged, _canvasController, &CanvasController::selectDrawToolWidth);
+
+    // Create Stroke Size Label
+    QLabel *brushSizeLabel = new QLabel("Stroke Size:", this);
+    brushSizeLabel->setStyleSheet("QLabel {color: " + textColor + "; }");
+
     // Create the icon buttons
     QPushButton *generateImageBtn = new QPushButton(this);
     QIcon generateImageIcon("resources/icons/generate_images_icon_green.svg"); // Updated icon
@@ -127,6 +147,9 @@ MainWindow::MainWindow(QWidget *parent) :
     buttonLayout->addStretch();
 
     // Add the buttons to the layout and set the layout for the container widget
+    buttonLayout->addWidget(showShadowCheckBox);
+    buttonLayout->addWidget(brushSizeLabel);
+    buttonLayout->addWidget(brushSizeSlider);
     buttonLayout->addWidget(generateImageBtn);
     buttonLayout->addWidget(createShadowBtn);
     buttonLayout->addWidget(undoBtn);

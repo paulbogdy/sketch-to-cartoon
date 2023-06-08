@@ -21,6 +21,7 @@ public:
 public slots:
     void updateImage(const QImage& image);
     void updateShadow(const QImage& image);
+    void updateShadowVisibility(int state);
 
 signals:
     void imageChanged(const QImage& image);
@@ -39,12 +40,17 @@ protected:
 
 private:
     void drawLineTo(const QPoint& endPoint);
+    double getOpacityWeight(QPoint mousePos);
+    void setOpacityCircular(QImage &image, const QPoint &center, double radius);
 
     CanvasModel* _canvasModel;
     QImage _image;
     QImage _shadow;
+    QImage _background;
     QPoint _lastPoint;
     QPen _pen;
+    bool _showShadow;
+
 };
 
 

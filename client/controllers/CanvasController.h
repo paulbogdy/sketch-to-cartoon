@@ -24,10 +24,12 @@ public slots:
 
     void selectPen();
     void selectEraser();
+    void selectDrawToolWidth(int width);
 
 private:
     CanvasModel* _canvasModel;
     CanvasView* _canvasView;
+    int _drawToolWidth;
 
 };
 

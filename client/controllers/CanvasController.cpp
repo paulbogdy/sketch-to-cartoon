@@ -104,8 +104,15 @@ void CanvasController::loadSketch() {
 
 void CanvasController::selectPen() {
     _canvasModel->setDrawTool(std::make_shared<PenTool>());
+    _canvasModel->setDrawToolWidth(_drawToolWidth);
 }
 
 void CanvasController::selectEraser() {
     _canvasModel->setDrawTool(std::make_shared<EraserTool>());
+    _canvasModel->setDrawToolWidth(_drawToolWidth);
+}
+
+void CanvasController::selectDrawToolWidth(int width) {
+    _drawToolWidth = width;
+    _canvasModel->setDrawToolWidth(width);
 }
