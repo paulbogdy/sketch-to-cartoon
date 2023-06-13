@@ -16,6 +16,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QDialog(parent) {
     QHBoxLayout *strategyLayout = new QHBoxLayout();
     QLabel *strategyLabel = new QLabel(tr("Generative Strategy:"), this);
     QComboBox *strategyComboBox = new QComboBox(this);
+    strategyComboBox->setStyleSheet("color: white; background-color: #2d2d2d;");
     strategyComboBox->addItem("Default", QVariant::fromValue<QString>("Default"));
     strategyComboBox->addItem("Gan Inversion", QVariant::fromValue<QString>("Gan Inversion"));
     strategyLayout->addWidget(strategyLabel);
@@ -51,6 +52,16 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QDialog(parent) {
 
     // Apply button
     QPushButton *applyButton = new QPushButton(tr("Apply"), this);
+    applyButton->setStyleSheet("QPushButton {"
+                               "background-color: black;"
+                               "color: white;"
+                               "}"
+                               "QPushButton:hover {"
+                               "background-color: #555555;" // Change as needed
+                               "}"
+                               "QPushButton:pressed {"
+                               "background-color: #333333;" // Change as needed
+                               "}");
     applyButton->setEnabled(false); // Disabled initially
     mainLayout->addWidget(applyButton);
 
